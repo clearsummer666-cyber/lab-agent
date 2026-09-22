@@ -1,0 +1,46 @@
+# ===== 敏感信息（绝不能提交）=====
+.env
+.env.*
+*.env
+!.env.example
+
+# ===== Python / 后端 =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 运行期生成的数据（向量库、上传文件）
+backend/data/chroma/
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# 本地数据库文件
+*.sqlite3
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+dist-ssr/
+*.local
+coverage/
+.eslintcache
+*.timestamp-*-*.mjs
+
+# ===== 编辑器 / 系统 =====
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# ===== 备份文件 =====
+*.bak
+*.bak-*
