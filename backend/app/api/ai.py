@@ -20,7 +20,7 @@ def chat(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # 第24节整包返回，可留作对照
+    # 非流式接口：一次性返回完整回复
     content = agent_service.run_agent(db, current_user, data)
     return Response.success(data=ChatMessage(role="assistant", content=content))
 
@@ -32,14 +32,14 @@ def _sse_line(payload: dict) -> str:
 
 
 @router.post("/chat/stream")
-def chat_stream(
+async def chat_stream(
     data: ChatRequest,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    def event_gen():
+    async def event_gen():
         # 内层生成器：取出业务事件，包装成 SSE 文本再往外 yield
-        for event in agent_service.stream_agent(db, current_user, data):
+        async for event in agent_service.stream_agent(db, current_user, data):
             yield _sse_line(event)
 
     return StreamingResponse(

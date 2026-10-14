@@ -51,7 +51,7 @@
         </el-table-column>
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
-            <el-button v-if="row.status === 0" type="danger" text bg @click="handleCancel(row)"
+            <el-button v-if="row.status === 0 || row.status === 1" type="danger" text bg @click="handleCancel(row)"
               >取消</el-button
             >
           </template>

@@ -112,10 +112,53 @@ def build_tools(db: Session, current_user: User):
         now = datetime.now()
         return now.strftime("%Y-%m-%d")
 
+    @tool
+    def list_my_reservations(status: int | None = None) -> str:
+        """查询当前用户的预约记录列表。status: 0待审核，1已通过，2已拒绝，3已取消，不传则查全部"""
+        try:
+            page = reservation_service.get_reservation_page_list(
+                db, current_user, page=1, page_size=10, status=status
+            )
+            rows = [
+                {
+                    "reservation_id": item.id,
+                    "lab_name": item.lab_name,
+                    "equipment_name": item.equipment_name,
+                    "date": item.date,
+                    "start_time": item.start_time,
+                    "end_time": item.end_time,
+                    "status": item.status,
+                }
+                for item in page.list
+            ]
+            return json.dumps(
+                {"total": page.total, "reservations": rows}, ensure_ascii=False
+            )
+        except Exception as exc:
+            return json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False)
+
+    @tool
+    def cancel_my_reservation(reservation_id: int) -> str:
+        """根据预约记录ID (reservation_id) 取消预约"""
+        try:
+            reservation_service.cancel_reservation(db, current_user, reservation_id)
+            return json.dumps(
+                {"ok": True, "message": f"预约单 {reservation_id} 已成功取消"},
+                ensure_ascii=False,
+            )
+        except BusinessException as exc:
+            return json.dumps({"ok": False, "error": exc.message}, ensure_ascii=False)
+        except Exception as exc:
+            return json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False)
+
+    # 暴露给 Agent 的全部工具
     return [
         search_lab_docs,
         list_open_labs,
         list_lab_equipments,
         create_lab_reservation,
         get_today,
+        list_my_reservations,
+        cancel_my_reservation,
     ]
+

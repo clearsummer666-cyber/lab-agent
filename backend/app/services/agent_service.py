@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 from typing import Any
 
 from langchain_openai import ChatOpenAI
@@ -19,6 +19,7 @@ SYSTEM_PROMPT = """你是智能实验室预约系统的 Agent，回答要简洁�
 2. 使用 list_open_labs / list_lab_equipments  查询真实的实验室和设备
 3. 再用户进行了预约确认后，使用 create_lab_reservation 来进行真实的预约落库
 4. 使用 get_today 来进行日期的换算
+5. 使用 list_my_reservations 查询当前用户的预约记录，并在用户确认后使用 cancel_my_reservation 取消预约（取消前必须先查出 reservation_id 并向用户复述确认，待审核和未开场的已通过预约均可取消）。
 
 ## 必须遵守
 当用户提到了 今天、明天、后天 等日期相关的问题，请先调用 get_today 来获取日期，**不要凭空猜测日期**
@@ -44,7 +45,7 @@ def build_agent(db: Session, current_user: User):
         base_url=settings.LLM_BASE_URL,
         model=settings.LLM_MODEL,
         temperature=0,
-        streaming=True,  # 打开流式，stream_events 才能收到逐字 token
+        streaming=True,  # 打开流式，才能逐字收到 token
     ).bind_tools(tools)
 
     def agent_node(state: MessagesState):
@@ -109,6 +110,8 @@ TOOL_LABELS = {
     "list_lab_equipments": "查询实验室设备",
     "create_lab_reservation": "提交预约",
     "get_today": "获取今天日期",
+    "list_my_reservations": "查询我的预约",
+    "cancel_my_reservation": "取消预约",
 }
 
 
@@ -157,7 +160,9 @@ def _build_history(data: ChatRequest) -> list:
     return history
 
 
-def stream_agent(db: Session, current_user: User, data: ChatRequest) -> Iterator[dict]:
+async def stream_agent(
+    db: Session, current_user: User, data: ChatRequest
+) -> AsyncIterator[dict]:
     """生成器：边跑 Agent 边 yield 事件，供 SSE 推给前端。
 
     事件类型：status / tool_start / tool_end / token / done / error
@@ -171,8 +176,8 @@ def stream_agent(db: Session, current_user: User, data: ChatRequest) -> Iterator
         # yield = 先交出这一条，函数暂停；前端收到后再继续往下跑
         yield {"type": "status", "message": "正在思考…"}
 
-        # stream_events：图每走一步（调工具、吐字）都会冒出一个内部事件
-        for event in agent.stream_events(
+        # astream_events：图每走一步（调工具、吐字）都会冒出一个内部事件
+        async for event in agent.astream_events(
             inputs,
             version="v2",
             config={"recursion_limit": 10},  # agent⇄tools 来回上限，防空转
