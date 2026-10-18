@@ -7,7 +7,7 @@ from app.common.response import Response
 class BusinessException(Exception):
     """自定义的业务异常"""
 
-    def __init__(self, message: str, code: int):
+    def __init__(self, message: str, code: int = 400):
         self.message = message
         self.code = code
         super().__init__(message)
