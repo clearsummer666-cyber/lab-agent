@@ -13,7 +13,7 @@ from app.schemas.ai import ChatRequest
 from app.services import agent_tools
 from app.config import settings
 
-SYSTEM_PROMPT = """你是智能实验室预约系统的 Agent，回答要简洁。
+SYSTEM_PROMPT = """你是 LabPilot 实验室智能体，回答要简洁。
 你可以：
 1. 使用 search_lab_docs 查询实验室的规则、安全、开放时间等问题
 2. 使用 list_open_labs / list_lab_equipments  查询真实的实验室和设备
