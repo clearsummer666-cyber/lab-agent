@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -9,7 +9,22 @@ from app.models.user import User
 
 class Reservation(Base):
     __tablename__ = "reservations"
-    __table_args__ = {"comment": "预约信息"}
+    __table_args__ = (
+        # 兜底约束：防住"完全相同时间段"的重复写入（比如绕过 service 直接写库）。
+        # 区间重叠（09:00-11:00 与 10:00-12:00）唯一索引防不住，
+        # 真正的并发防线是 service 层对实验室行的 SELECT ... FOR UPDATE。
+        # 注意：equipment_id 可为 NULL，而 MySQL 唯一索引里 NULL 互不相等，
+        # 所以"只约实验室"的记录这条约束不生效，仍需依赖行锁。
+        UniqueConstraint(
+            "lab_id",
+            "equipment_id",
+            "date",
+            "start_time",
+            "end_time",
+            name="uk_reservation_exact",
+        ),
+        {"comment": "预约信息"},
+    )
 
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"), comment="预约人", nullable=False
