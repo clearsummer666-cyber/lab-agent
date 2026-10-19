@@ -97,8 +97,6 @@ START ──▶ agent ──[tools_condition]──▶ tools ──┐
 | 请求 | Axios |
 | Markdown 渲染 | marked + DOMPurify |
 
-**部署**：Docker Compose（MySQL / FastAPI / Nginx）+ Let's Encrypt
-
 ---
 
 ## 三、功能模块
@@ -150,15 +148,6 @@ npm run dev
 
 默认访问 `http://localhost:5173`。
 
-### 4.3 Docker 部署
-
-```bash
-cp deploy.env.example deploy.env   # 逐项填写真实值
-docker compose --env-file deploy.env up -d --build
-```
-
-Nginx 同源反代静态前端与 `/api`、`/uploads`，不产生跨域；针对 SSE 关闭 `proxy_buffering`，避免整段缓冲后才下发。
-
 ---
 
 ## 五、目录结构
@@ -191,8 +180,6 @@ lab-agent/
 │   │   └── main.js
 │   ├── package.json
 │   └── vite.config.js
-├── docker-compose.yml
-├── deploy.env.example
 └── .gitignore
 ```
 
@@ -200,9 +187,9 @@ lab-agent/
 
 ## 六、环境变量
 
-后端配置项见 `backend/.env.example`，部署配置见 `deploy.env.example`。
+后端配置项见 `backend/.env.example`。
 
-> `deploy.env` 与 `backend/.env` 已被 `.gitignore` 忽略，**请勿提交真实密钥**。
+> `backend/.env` 已被 `.gitignore` 忽略，**请勿提交真实密钥**。
 
 ---
 
