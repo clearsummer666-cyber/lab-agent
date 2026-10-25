@@ -8,6 +8,37 @@
 
 ---
 
+## 界面预览
+
+**登录 · 实验室列表**
+
+<p align="center">
+  <img src="docs/screenshots/01-login.png" width="36%" alt="登录页">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/02-lab-list.png" width="60%" alt="实验室列表">
+</p>
+
+**Agent 对话：工具执行过程可见，写操作先复述再提交**
+
+<p align="center">
+  <img src="docs/screenshots/03-ai-chat-tools.png" width="45%" alt="工具执行过程">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/04-ai-chat-submit.png" width="50%" alt="确认并提交预约">
+</p>
+
+> 左：模型先调 `get_today` 拿真实日期、再调 `save_slot` 记录槽位，然后反问缺失字段。
+> 右：信息齐了先复述一遍等用户确认，确认后才调 `create_lab_reservation` 落库，返回单号与「待审核」状态。
+
+**空闲时段查询 · 管理员审核**
+
+<p align="center">
+  <img src="docs/screenshots/05-ai-availability.png" width="38%" alt="查询空闲时段">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/06-audit.png" width="58%" alt="预约审核">
+</p>
+
+---
+
 ## 一、Agent 链路
 
 ### 1.1 执行图
@@ -295,6 +326,8 @@ lab-agent/
 │   │   └── main.js
 │   ├── package.json
 │   └── vite.config.js
+├── docs/
+│   └── screenshots/      # README 界面预览图
 ├── 资料pdf/              # 教程原文（本地，不提交）
 └── .gitignore
 ```
