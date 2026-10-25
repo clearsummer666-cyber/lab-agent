@@ -1,8 +1,12 @@
+import logging
+
 from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.common.response import Response
+
+logger = logging.getLogger(__name__)
 
 
 class BusinessException(Exception):
@@ -39,7 +43,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 async def global_exception_handler(request: Request, exc: Exception):
-    """全局异常处理器"""
+    """全局异常处理器。
+
+    必须记日志：这里是所有未捕获异常的出口，不记就等于线上出事只能靠猜。
+    对外只返回笼统文案，堆栈留在服务端 —— 别把内部细节泄露给客户端。
+    """
+    logger.exception("未捕获异常：%s %s", request.method, request.url.path)
     return JSONResponse(
         status_code=500,
         content=Response.error(code=500, message="服务器内部错误").model_dump(),

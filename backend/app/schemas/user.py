@@ -14,7 +14,9 @@ class UserResponse(BaseModel):
 
 class UserCreateRequest(BaseModel):
     username: str
-    password: str = "123"
+    # 不设默认值：原来默认 "123"，管理员漏填就批量造出弱口令账号。
+    # 前端 User.vue 的密码字段本来就是 required，这里对齐成必填。
+    password: str
     name: str | None = None
     email: str | None = None
     phone: str | None = None
