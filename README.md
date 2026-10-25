@@ -159,16 +159,30 @@ python -m venv .venv
 # macOS / Linux
 # source .venv/bin/activate
 
-# 安装依赖（18 条，版本全部钉死且已实测）
+# 安装依赖（20 条，版本全部钉死且已实测）
 pip install -r requirements.txt
 
-# 配置环境变量
-cp .env.example .env          # 业务配置：数据库 / JWT / 兜底模型
-cp .env.ai.example .env.ai    # AI 对话模型（优先级高于 .env 的 LLM_*）
+# 配置环境变量（只需一个文件：数据库 / JWT / 模型配置全在里面）
+cp .env.example .env
 
 # 启动服务（首次启动会加载 embedding 模型并建库，耗时较长属正常）
 python -m uvicorn app.main:app --port 8000 --reload --reload-dir app
 ```
+
+**表结构变更走 Alembic**（`backend/alembic/`）：
+
+```bash
+cd backend
+alembic upgrade head                          # 升到最新版本
+alembic revision --autogenerate -m "加字段"   # 改完模型后生成迁移脚本
+alembic downgrade -1                          # 回退一步
+alembic current                               # 看当前版本
+```
+
+`alembic.ini` 里**故意不写连接串**，`env.py` 从 `settings.DATABASE_URL` 注入 —— 避免密码进 git。
+`main.py` 里的 `create_all` 只是「表不存在时兜底」，**它只建不改**：给已有库加字段、改索引完全不生效，
+所以变更必须走迁移。baseline 已 stamp，`upgrade head` 不会重复建表。
+
 
 > **依赖里三个容易被漏掉的**（已写进 `requirements.txt`，列出来是为了讲清作用）：
 > - `python-multipart` —— 文件上传接口（`/api/files/upload`）必需，缺了 uvicorn 直接起不来
@@ -179,8 +193,9 @@ python -m uvicorn app.main:app --port 8000 --reload --reload-dir app
 > （`BAAI/bge-small-zh-v1.5`，约 96MB）。`app/ai/__init__.py` 已默认设置该变量，
 > 但首次下载时需临时取消。
 
-**AI 对话用的是独立模型配置**：`backend/.env.ai`（`AI_LLM_MODEL` / `AI_LLM_BASE_URL` / `AI_LLM_API_KEY`），
-优先于 `.env` 里的 `LLM_*`。这样换模型不用动业务配置，`load_dotenv(override=False)` 意味着**改完必须重启服务**。
+**模型配置两套并存，都在 `backend/.env` 里**：`AI_LLM_*` 优先，没配齐就**整套**回落到 `LLM_*`。
+这样业务兜底模型撞限流（实测 429）时，只换 `AI_LLM_*` 就能把对话切到别的模型，不用动业务配置。
+**改完必须重启服务才生效** —— pydantic-settings 只在进程启动时读一次。
 
 **改完代码跑一次自检**：
 
@@ -188,7 +203,25 @@ python -m uvicorn app.main:app --port 8000 --reload --reload-dir app
 cd backend && bash check.sh
 ```
 
-三步：`compileall` 语法检查 → import 冒烟（路由数 + 工具数）→ 30 条离线黄金集评测。约 30 秒，零 API 成本。
+四步：`compileall` 语法检查 → `pytest` 单元测试（SQLite 临时库，不需要 MySQL）→ import 冒烟（路由数 + 工具数）→ 30 条离线黄金集评测。约 1 分钟，零 API 成本。
+
+**单元测试**（`backend/tests/test_*.py`）覆盖的是业务真风险点，不是凑覆盖率：
+
+| 用例组 | 覆盖点 |
+|---|---|
+| `test_reservation.py` | 区间重叠的 7 种形态、时间归一化、容量上限、开放时段、四态状态机非法流转、越权取消、唯一索引兜底 |
+| `test_auth.py` | JWT 寿命与配置一致、过期/篡改 token、禁用用户、学生越权调管理员接口、bcrypt 加盐 |
+| `test_tools.py` | 工具参数不臆造、业务异常降级为 `{"ok": false}`、跨用户隔离、输出格式 |
+
+跑测试要先装开发依赖：
+
+```bash
+cd backend && pip install -r tests/requirements-dev.txt
+cd tests && python -m pytest
+```
+
+> 测试库里两个 `xfail` 是**已知缺口的活文档**（service 层不校验设备归属、`equipment_id` 为 NULL 时唯一索引不生效）。
+> 哪天补上了，它们会自动变成 `XPASS` 并报错，提醒你更新这条记录。
 
 离线评测集在 `backend/tests/`，覆盖 10 个 suite（核心任务 / 知识问答 / 多轮指代 / 多轮改口 /
 异常输入 / 工具调用 / 多意图 / 模糊意图 / 长对话衰减 / 幂等），跑的是脚本化假 Agent + 假数据，
@@ -235,15 +268,20 @@ lab-agent/
 │   │   ├── checkpoints.sqlite  # 会话记忆（运行期生成，已 gitignore）
 │   │   └── threads.db    # 记忆 TTL 记录（运行期生成，已 gitignore）
 │   ├── uploads/          # 上传文件（运行期生成，已 gitignore）
-│   ├── tests/            # 离线评测：30 条黄金集 + 假 Agent + 假数据
+│   ├── tests/            # 全部测试代码与配置
+│   │   ├── conftest.py   # pytest 夹具：临时 SQLite 库 + 用户/实验室工厂
+│   │   ├── test_*.py     # 单元测试：预约 / 鉴权 / Agent 工具
+│   │   ├── pytest.ini    # pytest 配置（rootdir 就是本目录）
+│   │   ├── requirements-dev.txt  # 测试依赖（pytest）
 │   │   ├── run_eval.py   # 评测入口（--critical / --k / --only）
 │   │   ├── data.py       # 假数据层（4 实验室 / 5 设备）
 │   │   └── eval/         # core / graders / harness / sut / tasks
-│   ├── check.sh          # 自检脚本：语法 + 冒烟 + 30 条离线评测
+│   ├── check.sh          # 自检脚本：语法 + 单元测试 + 冒烟 + 30 条离线评测
 │   ├── requirements.txt
-│   ├── .env.example      # 业务配置模板（数据库 / JWT / 兜底模型）
-│   ├── .env.ai.example   # AI 对话模型配置模板
-│   └── .env.ai           # 实际 AI 配置（本地，含 key，不提交）
+│   ├── alembic.ini       # 迁移配置（连接串由 env.py 注入）
+│   ├── alembic/          # 表结构迁移：env.py + versions/
+│   ├── .env.example      # 配置模板（数据库 / JWT / 模型）
+│   └── .env              # 实际配置（本地，含 key，不提交）
 ├── frontend/
 │   ├── src/
 │   │   ├── api/          # 接口封装（含 SSE 手动解析）
@@ -265,25 +303,24 @@ lab-agent/
 
 ## 六、环境变量
 
-后端业务配置见 `backend/.env.example`：
+只需要一个文件：`backend/.env`（从 `backend/.env.example` 复制）。
 
 | 变量 | 说明 |
 |---|---|
 | `DATABASE_URL` | MySQL 连接串 |
 | `JWT_SECRET_KEY` / `JWT_EXPIRE_HOURS` / `JWT_ALGORITHM` | JWT 签发参数 |
-| `LLM_API_KEY` / `LLM_BASE_URL` / `LLM_MODEL` | 兜底模型配置 |
+| `AI_LLM_MODEL` / `AI_LLM_BASE_URL` / `AI_LLM_API_KEY` | AI 对话用的模型，**优先** |
+| `LLM_MODEL` / `LLM_BASE_URL` / `LLM_API_KEY` | 兜底模型，`AI_LLM_*` 没配齐时整套回落 |
 
-AI 对话模块另有 `backend/.env.ai`（**优先于上面的 `LLM_*`**）：
-
-| 变量 | 说明 |
-|---|---|
-| `AI_LLM_MODEL` | 模型名 |
-| `AI_LLM_BASE_URL` | OpenAI 兼容接口地址 |
-| `AI_LLM_API_KEY` | 密钥 |
-
-> 两个模板（`.env.example` / `.env.ai.example`）会随仓库提交；
-> 实际的 `.env` / `.env.ai` 被 `.gitignore` 忽略，**请勿提交真实密钥**。
-> `.env.ai` 用 `load_dotenv(override=False)` 读取 —— 已存在的环境变量优先，**改完必须重启服务才生效**。
+> **两套模型配置必须至少配齐一套**（各三个字段都要有）。`Settings` 里做了启动期校验，
+> 缺了服务直接起不来，不会等到第一个用户提问才报错。
+>
+> 回落是**整套**的，不是逐字段 `or` —— 否则会出现 model 取 `AI_LLM_MODEL`、
+> key 取 `LLM_API_KEY` 的混搭，连上去就是 401。
+>
+> 2026-10-25 合并：原来 AI 部分单独放 `backend/.env.ai`，靠 `load_dotenv` 塞进环境变量；
+> 现在统一由 pydantic-settings 从 `.env` 读，少一个文件、少一个「clone 下来忘了 cp」的坑。
+> `.env` 被 `.gitignore` 忽略，**请勿提交真实密钥**。
 
 ---
 
