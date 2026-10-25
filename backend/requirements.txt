@@ -9,10 +9,11 @@ python-multipart==0.0.32          # 文件上传必需；缺了 uvicorn 直接�
 # ===== 数据库 =====
 sqlalchemy==2.1.4
 pymysql==1.2.3
+alembic==1.20.1                   # 表结构迁移（backend/alembic/）
 
 # ===== 配置 =====
 pydantic-settings==2.15.0
-python-dotenv==1.2.4              # app/ai/builder.py 读 .env.ai 用
+python-dotenv==1.2.4              # pydantic-settings 读 .env 用
 
 # ===== 认证 =====
 bcrypt==5.0.0

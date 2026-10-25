@@ -24,6 +24,10 @@ from app.services import kb_service, reservation_service
 
 logger = logging.getLogger(__name__)
 
+# 开发期兜底：表不存在时自动建，clone 下来直接能跑。
+# 表结构**变更**必须走 Alembic（backend/alembic/）—— create_all 只建不改，
+# 对已有库加字段/改索引完全不生效：
+#   alembic revision --autogenerate -m "说明"  &&  alembic upgrade head
 Base.metadata.create_all(bind=engine)
 
 
