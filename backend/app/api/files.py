@@ -1,8 +1,9 @@
 import os
-import time
-from pathlib import Path
-import uuid
 import shutil
+import time
+import uuid
+from pathlib import Path
+
 from fastapi import APIRouter, File, UploadFile
 
 from app.common.exceptions import BusinessException
@@ -23,7 +24,7 @@ def upload(file: UploadFile = File(...)):
     # 文件后缀 .jpg
     ext = Path(original_name).suffix.lower()
     if ext not in ALLOWED_EXTENSIONS:
-        raise BusinessException(message=f"不自持的文件后缀：{ext}")
+        raise BusinessException(message=f"不支持的文件后缀：{ext}")
     # 文件大小校验
     if file.size and file.size > MAX_FILE_SIZE:
         raise BusinessException(
