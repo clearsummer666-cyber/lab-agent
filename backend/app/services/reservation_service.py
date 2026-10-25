@@ -69,6 +69,21 @@ def create_reservation(db: Session, current_user: User, data: ReservationCreateR
     if lab.close_time and end_time > lab.close_time:
         raise BusinessException(message="预约时间不能晚于实验室的关闭时间")
 
+    # ── 容量校验（2026-10-25 补） ──
+    # 原来这里没有容量校验：AI 对话层拦了（`app/ai/tools.py`），
+    # 但 REST 接口直接走 service，绕过了工具层 → 999 人能约进 30 人的实验室。
+    # 而且 AI 层收集的人数传给 service 时被 Pydantic 丢掉（schema 没这字段），
+    # 等于人数只是个摆设。现在 schema 加了 people（可选，不落库）。
+    # people 为 None 表示调用方没传（前端目前就不传），此时跳过校验，保持向后兼容。
+    if data.people is not None:
+        if data.people < 1:
+            raise BusinessException(message="预约人数至少 1 人")
+        capacity = lab.capacity or 0
+        if capacity and data.people > capacity:
+            raise BusinessException(
+                message=f"{lab.name}最多容纳 {capacity} 人，你预约了 {data.people} 人"
+            )
+
     # ── 3. 锁内校验：此刻读到的数据，到 commit 前不会被并发请求改变 ──
     # equipment_id 不为空 则表示这次是预约的实验室设备
     if data.equipment_id:

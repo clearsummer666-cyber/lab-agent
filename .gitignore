@@ -17,10 +17,15 @@ env/
 .mypy_cache/
 .ruff_cache/
 
-# 运行期生成的数据（向量库、上传文件）
+# 运行期生成的数据（向量库、上传文件、会话记忆）
 backend/data/chroma/
 backend/uploads/*
 !backend/uploads/.gitkeep
+# LangGraph 会话持久化 + 记忆 TTL 记录（运行期产生，不入库）
+backend/data/*.sqlite
+backend/data/*.sqlite-shm
+backend/data/*.sqlite-wal
+backend/data/threads.db
 
 # 本地数据库文件
 *.sqlite3
@@ -44,3 +49,7 @@ Thumbs.db
 # ===== 备份文件 =====
 *.bak
 *.bak-*
+*.bak_*
+
+# AI 对话模块的独立模型配置（含明文 key）
+.env.ai
