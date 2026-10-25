@@ -21,6 +21,8 @@ env/
 backend/data/chroma/
 backend/uploads/*
 !backend/uploads/.gitkeep
+# 演示数据的实验室配图要进仓库，否则 clone 下来列表页是灰块
+!backend/uploads/seed-lab-*.jpg
 # LangGraph 会话持久化 + 记忆 TTL 记录（运行期产生，不入库）
 backend/data/*.sqlite
 backend/data/*.sqlite-shm
