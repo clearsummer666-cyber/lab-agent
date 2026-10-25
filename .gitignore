@@ -3,7 +3,6 @@
 .env.*
 *.env
 !.env.example
-!.env.ai.example
 
 # ===== Python / 后端 =====
 __pycache__/
@@ -51,6 +50,3 @@ Thumbs.db
 *.bak
 *.bak-*
 *.bak_*
-
-# AI 对话模块的独立模型配置（含明文 key）
-.env.ai

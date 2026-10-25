@@ -10,8 +10,6 @@
 """
 
 import datetime
-
-import os
 import sqlite3
 from pathlib import Path
 
@@ -24,6 +22,7 @@ from app.ai.repo import SqlRepo
 from app.ai.state import BookingState
 from app.ai.trim import TrimMiddleware
 from app.ai.tools import make_tools
+from app.common.exceptions import BusinessException
 from app.config import settings
 
 # ★ 持久化 checkpointer：进程重启后对话历史还在。
@@ -83,25 +82,33 @@ SYSTEM_PROMPT = """你是 LabPilot 实验室智能体，回答要简洁。今天
 
 
 def _llm_config() -> dict:
-    """模型配置。优先 `backend/.env.ai`，回落到原项目 settings。
+    """模型配置：`AI_LLM_*` 优先，整套回落到 `LLM_*`。两套都在 backend/.env 里。
 
-    ★ 为什么单独一个配置文件：
-      原 `.env` 里的 `LLM_*` 是原项目的配置，不在可改范围（L2-PLAN 目录责任表）。
-      但它的 agnes 免费 key 会限流（实测 429 速率限制），换模型又不能改它。
-      所以新建 `.env.ai` 放 `AI_LLM_*`，用 dotenv 读进环境变量后优先使用。
-      原 `.env` 一个字没动。
+    ★ 为什么保留两套：
+      `LLM_*` 是业务侧的兜底配置，免费额度会撞速率限制（实测 429）。
+      把 AI 对话切到独立模型时只改 `AI_LLM_*`，不用动业务配置。
+
+    ★ 2026-10-25 合并：
+      原来 AI 部分单独放 `backend/.env.ai`，靠 `load_dotenv` 塞进环境变量再 getenv。
+      现在统一由 pydantic-settings 从 `.env` 读 —— 少一个文件、少一条读取路径、
+      少一个「clone 下来忘了 cp .env.ai」的坑。
+
+    ★ 必须**整套**回落，不能逐字段 or：
+      否则会出现 model 取 AI_LLM_MODEL、key 取 LLM_API_KEY 的混搭，连上去就 401。
     """
-    from dotenv import load_dotenv
+    ai_set = (settings.AI_LLM_MODEL, settings.AI_LLM_BASE_URL, settings.AI_LLM_API_KEY)
+    fallback_set = (settings.LLM_MODEL, settings.LLM_BASE_URL, settings.LLM_API_KEY)
 
-    env_file = Path(__file__).resolve().parent.parent.parent / ".env.ai"
-    if env_file.exists():
-        load_dotenv(env_file, override=False)   # 已有环境变量优先，不硬覆盖
+    if all(ai_set):
+        model, base_url, api_key = ai_set
+    elif all(fallback_set):
+        model, base_url, api_key = fallback_set
+    else:
+        raise BusinessException(
+            message="模型配置不完整：backend/.env 里 AI_LLM_* 或 LLM_* 必须各配齐三个"
+        )
 
-    return {
-        "model": os.getenv("AI_LLM_MODEL") or settings.LLM_MODEL,
-        "base_url": os.getenv("AI_LLM_BASE_URL") or settings.LLM_BASE_URL,
-        "api_key": os.getenv("AI_LLM_API_KEY") or settings.LLM_API_KEY,
-    }
+    return {"model": model, "base_url": base_url, "api_key": api_key}
 
 
 def build_agent(db, current_user, llm=None, checkpointer=None,
