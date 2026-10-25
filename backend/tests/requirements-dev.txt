@@ -1,0 +1,3 @@
+# 测试依赖，业务运行不需要
+# 安装：cd backend && pip install -r tests/requirements-dev.txt
+pytest==9.1.1
