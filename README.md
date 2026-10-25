@@ -159,20 +159,18 @@ python -m venv .venv
 # macOS / Linux
 # source .venv/bin/activate
 
-# 安装依赖
+# 安装依赖（18 条，版本全部钉死且已实测）
 pip install -r requirements.txt
 
-# ★ 以下三个包不在 requirements.txt 里，但缺了跑不起来，必须单独装
-pip install python-multipart langgraph-checkpoint-sqlite aiosqlite
-
-# 配置环境变量：复制 .env.example 为 .env 并填写真实值
-cp .env.example .env
+# 配置环境变量
+cp .env.example .env          # 业务配置：数据库 / JWT / 兜底模型
+cp .env.ai.example .env.ai    # AI 对话模型（优先级高于 .env 的 LLM_*）
 
 # 启动服务（首次启动会加载 embedding 模型并建库，耗时较长属正常）
 python -m uvicorn app.main:app --port 8000 --reload --reload-dir app
 ```
 
-> **三个隐性依赖**，各自的作用：
+> **依赖里三个容易被漏掉的**（已写进 `requirements.txt`，列出来是为了讲清作用）：
 > - `python-multipart` —— 文件上传接口（`/api/files/upload`）必需，缺了 uvicorn 直接起不来
 > - `langgraph-checkpoint-sqlite` —— 会话持久化（`SqliteSaver` / `AsyncSqliteSaver`）
 > - `aiosqlite` —— 异步 checkpointer 的连接驱动
@@ -191,7 +189,16 @@ cd backend && bash check.sh
 ```
 
 三步：`compileall` 语法检查 → import 冒烟（路由数 + 工具数）→ 30 条离线黄金集评测。约 30 秒，零 API 成本。
-端到端那两套（AI 对话 12 条 / 普通预约 13 条）要真库 + 真模型，**评测脚本未随本仓库提供**，需另行准备。
+
+离线评测集在 `backend/tests/`，覆盖 10 个 suite（核心任务 / 知识问答 / 多轮指代 / 多轮改口 /
+异常输入 / 工具调用 / 多意图 / 模糊意图 / 长对话衰减 / 幂等），跑的是脚本化假 Agent + 假数据，
+判定靠 `expect` 断言 + `forbid` 护栏。也可以单独跑：
+
+```bash
+cd backend/tests && ../.venv/Scripts/python.exe run_eval.py --critical --k 5
+```
+
+端到端那两套（AI 对话 12 条 / 普通预约 13 条）要真 MySQL + 真模型，**脚本未随仓库提供**。
 
 ### 4.2 前端
 
@@ -228,10 +235,15 @@ lab-agent/
 │   │   ├── checkpoints.sqlite  # 会话记忆（运行期生成，已 gitignore）
 │   │   └── threads.db    # 记忆 TTL 记录（运行期生成，已 gitignore）
 │   ├── uploads/          # 上传文件（运行期生成，已 gitignore）
+│   ├── tests/            # 离线评测：30 条黄金集 + 假 Agent + 假数据
+│   │   ├── run_eval.py   # 评测入口（--critical / --k / --only）
+│   │   ├── data.py       # 假数据层（4 实验室 / 5 设备）
+│   │   └── eval/         # core / graders / harness / sut / tasks
 │   ├── check.sh          # 自检脚本：语法 + 冒烟 + 30 条离线评测
 │   ├── requirements.txt
-│   ├── .env.example      # 配置模板
-│   └── .env.ai           # AI 模块独立模型配置（本地，含 key，不提交）
+│   ├── .env.example      # 业务配置模板（数据库 / JWT / 兜底模型）
+│   ├── .env.ai.example   # AI 对话模型配置模板
+│   └── .env.ai           # 实际 AI 配置（本地，含 key，不提交）
 ├── frontend/
 │   ├── src/
 │   │   ├── api/          # 接口封装（含 SSE 手动解析）
@@ -269,7 +281,8 @@ AI 对话模块另有 `backend/.env.ai`（**优先于上面的 `LLM_*`**）：
 | `AI_LLM_BASE_URL` | OpenAI 兼容接口地址 |
 | `AI_LLM_API_KEY` | 密钥 |
 
-> 两个文件都被 `.gitignore` 忽略（`.env` / `.env.*` / `.env.ai`），**请勿提交真实密钥**。
+> 两个模板（`.env.example` / `.env.ai.example`）会随仓库提交；
+> 实际的 `.env` / `.env.ai` 被 `.gitignore` 忽略，**请勿提交真实密钥**。
 > `.env.ai` 用 `load_dotenv(override=False)` 读取 —— 已存在的环境变量优先，**改完必须重启服务才生效**。
 
 ---

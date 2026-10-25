@@ -3,6 +3,7 @@
 .env.*
 *.env
 !.env.example
+!.env.ai.example
 
 # ===== Python / 后端 =====
 __pycache__/

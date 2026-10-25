@@ -1,14 +1,33 @@
+# 安装：pip install -r requirements.txt
+# 全部钉死版本 —— 以下版本组合已实测跑通（2026-10-25）
+
+# ===== Web 框架 =====
 fastapi==0.143.0
 uvicorn==0.54.0
+python-multipart==0.0.32          # 文件上传必需；缺了 uvicorn 直接起不来
+
+# ===== 数据库 =====
 sqlalchemy==2.1.4
 pymysql==1.2.3
+
+# ===== 配置 =====
 pydantic-settings==2.15.0
+python-dotenv==1.2.4              # app/ai/builder.py 读 .env.ai 用
+
+# ===== 认证 =====
 bcrypt==5.0.0
 PyJWT==2.15.1
 cryptography==50.0.1
+
+# ===== LLM 编排 =====
 openai==3.14.1
+langchain==1.4.6                  # langchain.agents.create_agent / middleware
+langchain-core==1.7.0
+langchain-openai==1.6.2
+langgraph==1.2.17
+langgraph-checkpoint-sqlite==3.1.2  # SqliteSaver / AsyncSqliteSaver
+aiosqlite==0.22.1                 # 异步 checkpointer 连接驱动
+
+# ===== RAG =====
 chromadb==1.5.9
 sentence-transformers==6.0.1
-langgraph==1.2.11
-langchain-openai==1.6.2
-langchain-core==1.6.3

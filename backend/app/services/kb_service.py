@@ -1,9 +1,12 @@
-from pydoc import doc
-from typing import final
+import logging
+
+import chromadb
 from chromadb.api.models.Collection import Collection
 from chromadb.utils import embedding_functions
-import chromadb
+
 from app.config import BASE_DIR
+
+logger = logging.getLogger(__name__)
 
 KB_DIR = BASE_DIR / "data" / "kb"
 CHROMA_DIR = BASE_DIR / "data" / "chroma"
@@ -25,7 +28,7 @@ def get_embedding_fn():
     return _embedding_fn
 
 
-def get_collcetion() -> Collection:
+def get_collection() -> Collection:
     """向量库的初始化"""
 
     global _collection
@@ -58,7 +61,7 @@ def get_collcetion() -> Collection:
 
 def search(query: str):
     """根据关键字去检索向量库"""
-    col = get_collcetion()
+    col = get_collection()
     if col.count() == 0:
         return ""
     limit = min(5, col.count())
@@ -73,20 +76,20 @@ def search(query: str):
 
     # 实验室预约规则...
 
-    
+
     [安全规范.md]
 
     安全规范....
     """
     score_parts = []
-    for doc, metas, dist in zip(docs, metas, distances):
+    for doc, meta, dist in zip(docs, metas, distances):
         # 0-1 越接近1表示越相关
         score = 1 / (1 + dist)
         if score < 0.5:
             continue
-        name = metas.get("source") or ""
+        name = (meta or {}).get("source") or ""
         score_parts.append({"score": score, "content": f"[{name}]\n{doc}"})
-    print(f"检索出来的 score_parts：{score_parts}")
+    logger.debug("检索结果：%s", score_parts)
     score_parts.sort(key=lambda x: x["score"], reverse=True)
     final_parts = [item["content"] for item in score_parts[:2]]
     return "\n\n".join(final_parts)
@@ -94,6 +97,6 @@ def search(query: str):
 
 def warmup():
     """启动时预热：把模型加载 + 首次检索的开销付在启动阶段，别落在第一个用户请求上"""
-    col = get_collcetion()
+    col = get_collection()
     if col.count() > 0:
         col.query(query_texts=["预热"], n_results=1)
