@@ -10,12 +10,12 @@
 
 ## 界面预览
 
-**登录 · 实验室列表**
+**登录 · 实验室管理**
 
 <p align="center">
-  <img src="docs/screenshots/01-login.png" width="36%" alt="登录页">
+  <img src="docs/screenshots/01-login.png" width="35%" alt="登录页">
   &nbsp;&nbsp;
-  <img src="docs/screenshots/02-lab-list.png" width="60%" alt="实验室列表">
+  <img src="docs/screenshots/02-lab-manage.png" width="61%" alt="实验室管理">
 </p>
 
 **Agent 对话：工具执行过程可见，写操作先复述再提交**
