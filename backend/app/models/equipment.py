@@ -1,11 +1,18 @@
+from sqlalchemy import ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, Integer, String
+
 from app.database import Base
 from app.models.lab import Lab
 
+
 class Equipment(Base):
     __tablename__ = "equipments"
-    __table_args__ = {"comment": "实验室设备表"}
+    __table_args__ = (
+        # 同一实验室下设备不能重名。service 层查重存在竞态窗口
+        # （先查后插两步之间），唯一索引才是真防线 —— 和 reservations 一个思路。
+        UniqueConstraint("lab_id", "name", name="uk_equipment_lab_name"),
+        {"comment": "实验室设备表"},
+    )
 
     lab_id: Mapped[int] = mapped_column(
         ForeignKey("labs.id"), comment="所属实验室", nullable=False
