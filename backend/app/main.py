@@ -15,10 +15,10 @@ from fastapi.exceptions import RequestValidationError, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from app.common.exceptions import (
     BusinessException,
-    bussiness_excpetion_hadler,
-    http_excpetion_hadler,
-    validation_excpetion_hadler,
-    global_excpetion_hadler,
+    business_exception_handler,
+    global_exception_handler,
+    http_exception_handler,
+    validation_exception_handler,
 )
 from app.services import kb_service, reservation_service
 
@@ -63,11 +63,11 @@ app.include_router(api)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # 注册异常处理器
-app.add_exception_handler(BusinessException, bussiness_excpetion_hadler)
-app.add_exception_handler(HTTPException, http_excpetion_hadler)
-app.add_exception_handler(RequestValidationError, validation_excpetion_hadler)
+app.add_exception_handler(BusinessException, business_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
 # 全局的异常兜底，必须放在最后注册！！
-app.add_exception_handler(Exception, global_excpetion_hadler)
+app.add_exception_handler(Exception, global_exception_handler)
 
 
 @app.get("/")
