@@ -20,7 +20,7 @@
 
 import datetime
 import json
-from typing import Literal
+from typing import Any, Literal
 
 from langchain.tools import ToolRuntime, tool
 from langchain_core.messages import ToolMessage

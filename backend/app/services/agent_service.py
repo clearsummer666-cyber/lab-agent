@@ -16,6 +16,7 @@
 # 离线模式的环境变量在 app/ai/__init__.py 里设（所有入口的必经之路）。
 # 放在本文件不可靠：直接 import app.ai 的脚本不经过这里。
 import logging
+import time
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -26,10 +27,11 @@ from app.ai import build_agent as ai_build_agent
 from app.ai.builder import get_async_checkpointer
 from app.ai import thread_id_of
 from app.ai.retention import maybe_purge, touch
-from app.ai.router import pick_tool_names
+from app.ai.router import describe_intent, pick_tool_names
 from app.common.exceptions import BusinessException
 from app.models.user import User
 from app.schemas.ai import ChatRequest
+from app.services import agent_run_service
 
 # 工具英文名 → 页面上给人看的中文过程文案
 # ★ 前端按 name 匹配这个表，所以工具名不能改，只能往里加条目
@@ -162,9 +164,25 @@ async def stream_agent(
     事件类型：status / tool_start / tool_end / token / done / error
     ★ 任何错误都必须 yield，不能 raise —— 一旦 raise，SSE 已经开了头，
       前端只会看到连接断开。
+
+    调用日志（agent_runs 表）在 finally 里写，**旁路**：
+    写日志失败只记 warning，绝不影响这轮对话。
     """
+    started_at = time.perf_counter()
+    question = ""
+    tool_seq: list[str] = []
+    usage_in = usage_out = 0
+    run_status = 0          # 0 成功 / 1 失败
+    run_error: str | None = None
+    # 分段耗时：把"慢在哪"变成可查的数字（模型 vs 工具）
+    model_ms = 0.0
+    tool_ms = 0.0
+    t_model = 0.0
+    t_tool = 0.0
+
     try:
         text = _last_user_text(data)
+        question = text
         saver = await get_async_checkpointer()
         touch(thread_id_of(current_user))
         maybe_purge(saver)
@@ -173,25 +191,27 @@ async def stream_agent(
         )
         inputs = {"messages": [HumanMessage(content=text)]}
 
-        yield {"type": "status", "message": "正在思考…"}
-
-        # token 埋点：SSE 层原本拿不到用量，评测/成本监控都是瞎的。
-        # 在 done 事件里带一个 usage 字段 —— **只加不改**，前端只读 type，
-        # 多出来的字段会被忽略，所以不破坏冻结契约。
-        usage_in = usage_out = 0
+        yield {"type": "status", "message": describe_intent(text)}
 
         async for event in agent.astream_events(
             inputs, version="v2", config=_config(current_user)
         ):
             kind = event.get("event")
-            if kind == "on_tool_start":
+            if kind == "on_chat_model_start":
+                t_model = time.perf_counter()
+            elif kind == "on_tool_start":
+                t_tool = time.perf_counter()
                 name = event.get("name") or ""
+                tool_seq.append(name)
                 yield {
                     "type": "tool_start",
                     "name": name,
                     "label": TOOL_LABELS.get(name, name),
                 }
             elif kind == "on_tool_end":
+                if t_tool:
+                    tool_ms += (time.perf_counter() - t_tool) * 1000
+                    t_tool = 0.0
                 name = event.get("name") or ""
                 yield {
                     "type": "tool_end",
@@ -202,6 +222,9 @@ async def stream_agent(
                     ),
                 }
             elif kind == "on_chat_model_end":
+                if t_model:
+                    model_ms += (time.perf_counter() - t_model) * 1000
+                    t_model = 0.0
                 msg = (event.get("data") or {}).get("output")
                 um = getattr(msg, "usage_metadata", None) or {}
                 usage_in += um.get("input_tokens", 0) or 0
@@ -211,15 +234,41 @@ async def stream_agent(
                 if text_chunk:
                     yield {"type": "token", "content": text_chunk}
 
+        # token 埋点：SSE 层原本拿不到用量，评测/成本监控都是瞎的。
+        # 在 done 事件里带一个 usage 字段 —— **只加不改**，前端只读 type，
+        # 多出来的字段会被忽略，所以不破坏冻结契约。
         yield {
             "type": "done",
             "usage": {"input": usage_in, "output": usage_out,
                       "total": usage_in + usage_out},
         }
     except BusinessException as exc:
+        run_status, run_error = 1, exc.message
         yield {"type": "error", "message": exc.message}
     except Exception:                                  # noqa: BLE001
         # 流式接口不能 raise（SSE 已经开头了），但异常必须留痕，
         # 否则前端只看到「大模型调用失败」，排查时完全没有线索。
         logging.exception("[ai] 流式对话异常")
+        run_status, run_error = 1, "大模型调用失败"
         yield {"type": "error", "message": "大模型调用失败，请稍后重试"}
+    finally:
+        # ★ 旁路写调用日志。放在 finally 是因为"失败也要记账"——
+        #   失败率本身就是要看的指标。record_run 内部已兜 try/except，
+        #   这里再包一层是双保险：日志服务挂了不能连累对话。
+        try:
+            agent_run_service.record_run(
+                db,
+                user_id=current_user.id,
+                thread_id=thread_id_of(current_user),
+                question=question,
+                status=run_status,
+                duration_ms=int((time.perf_counter() - started_at) * 1000),
+                tool_calls=tool_seq,
+                input_tokens=usage_in,
+                output_tokens=usage_out,
+                error=run_error,
+                model_ms=int(model_ms),
+                tool_ms=int(tool_ms),
+            )
+        except Exception:  # noqa: BLE001
+            logging.warning("[ai] 调用日志写入异常（已忽略）", exc_info=True)

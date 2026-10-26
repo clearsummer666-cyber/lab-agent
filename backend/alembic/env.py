@@ -24,6 +24,7 @@ from app.config import settings  # noqa: E402
 from app.database import Base  # noqa: E402
 
 # 必须 import 所有模型，autogenerate 才认得这些表
+from app.models.agent_run import AgentRun  # noqa: E402,F401
 from app.models.equipment import Equipment  # noqa: E402,F401
 from app.models.lab import Lab  # noqa: E402,F401
 from app.models.reservation import Reservation  # noqa: E402,F401

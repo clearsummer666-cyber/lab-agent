@@ -11,6 +11,18 @@ export function chatApi(data) {
 }
 
 /**
+ * 今日 AI 用量与剩余额度。
+ * 返回 { is_admin, run_used, run_limit, run_left, token_used, token_limit, token_left, max_input_chars }
+ * 限额为 -1 表示不限（管理员）。
+ */
+export function getQuotaApi() {
+  return request({
+    url: '/api/ai/quota',
+    method: 'get'
+  })
+}
+
+/**
  * SSE 流式对话。onEvent(evt) 每收到一条 data 回调一次。
  */
 export async function chatStreamApi(data, onEvent) {

@@ -39,10 +39,8 @@
           :loading="loadingValue"
           >登 录</el-button
         >
-        <div style="text-align: right; margin-top: 20px">
-          还没有账号？请<router-link style="color: var(--el-color-primary)" to="/register"
-            >注册</router-link
-          >
+        <div style="text-align: center; margin-top: 20px; font-size: 13px; color: #909399">
+          账号由管理员开通，如需使用请联系管理员
         </div>
       </div>
     </div>

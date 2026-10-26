@@ -70,3 +70,36 @@ def pick_tool_names(text: str) -> list[str]:
 
     # 判断不了 → 全集
     return ALL_TOOL_NAMES
+
+
+# ── 过程文案：把「正在思考…」换成更具体的提示 ────────────
+# 为什么值得做：模型一次调用要 2-3 秒，用户在这几秒里只看到一句「正在思考」，
+# 体感很差。按意图提前说清"我在干什么"，实际耗时没变，但等待感明显变短。
+# ★ 文案必须保守：只描述"大概率要做什么"，不能承诺具体结果。
+_AVAIL_PATTERN = re.compile(
+    r"几点有空|什么时候有空|有空吗|有没有空|空闲|空档|可用时段|能约吗|可以约吗"
+)
+_CANCEL_PATTERN = re.compile(r"取消|退掉|撤销")
+_MY_PATTERN = re.compile(r"我的预约|我约了|我有哪些|预约记录|约过")
+
+
+def describe_intent(text: str) -> str:
+    """给用户输入，返回一句"我正在干什么"的过程文案。
+
+    顺序有讲究：先判"取消/查我的"，再判"查空闲"，最后才是泛化的预约/问答。
+    因为「取消我明天下午的预约」同时命中取消和预约，必须先按取消处理。
+    """
+    t = (text or "").strip()
+    if not t:
+        return "正在思考…"
+    if _CANCEL_PATTERN.search(t):
+        return "我先查一下你的预约记录…"
+    if _MY_PATTERN.search(t):
+        return "我先查一下你的预约记录…"
+    if _AVAIL_PATTERN.search(t):
+        return "我先查一下实验室的空闲时段…"
+    if _ACTION_PATTERN.search(t):
+        return "我先确认实验室与设备信息…"
+    if _ASK_PATTERN.search(t):
+        return "我先查一下实验室规则…"
+    return "正在思考…"

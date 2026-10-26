@@ -35,6 +35,22 @@ class Settings(BaseSettings):
     LLM_BASE_URL: str = ""
     LLM_API_KEY: str = ""
 
+    # ── AI 用量限额（公网演示，防止被人刷爆 token）──
+    # 口径：**按登录会话**计，不是按天。重新登录 → 新 token（带新的 iat）→ 额度自动刷新。
+    #       这样测试时反复登录就能重置，不用等第二天。
+    # 实测：一次完整预约（3 轮对话）约 12,400 token，其中输入占大头
+    #       —— system prompt + 9 个工具 schema 每轮都要重发，这是 Agent 架构的固有成本。
+    # 都能在 .env 里覆盖；改成 0 表示该项不限。
+    AI_SESSION_RUN_LIMIT: int = 10        # 单次登录最多几轮对话
+    AI_SESSION_TOKEN_LIMIT: int = 25000   # 单次登录最多多少 token（≈2 次完整预约）
+
+    # 兜底日限额：**登录不清零**。只防「反复重登无限刷」，正常演示撞不到。
+    # 嫌麻烦就设 0 关掉。
+    AI_DAILY_RUN_LIMIT: int = 80
+    AI_DAILY_TOKEN_LIMIT: int = 200000
+
+    AI_MAX_INPUT_CHARS: int = 500       # 单条消息最长多少字（防一次塞 5000 字顶爆输入）
+
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env", env_file_encoding="utf-8"
     )

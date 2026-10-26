@@ -57,6 +57,12 @@ const router = createRouter({
           path: 'ai-chat',
           name: 'AIChat',
           component: () => import('@/views/AIChat.vue')
+        },
+        {
+          // Agent 运营后台：调用日志 / token 成本 / 任务状态 / 效果评估
+          path: 'agent-admin',
+          name: 'AgentAdmin',
+          component: () => import('@/views/AgentAdmin.vue')
         }
       ],
     },
@@ -65,10 +71,11 @@ const router = createRouter({
       name: 'Login',
       component: () => import('@/views/LoginView.vue'),
     },
+    // 2026-10-26 公网部署：关闭自助注册（后端 /api/auth/register 也加了管理员鉴权）。
+    // 保留这个跳转，避免老书签 / 外部链接点进来是空白页。
     {
       path: '/register',
-      name: 'Register',
-      component: () => import('@/views/RegisterView.vue'),
+      redirect: '/login',
     },
   ],
 })
@@ -77,7 +84,7 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   const token = getToken()
 
-  if (to.path === '/login' || to.path === '/register') {
+  if (to.path === '/login') {
     return true
   } else {
     return token ? true : '/login'

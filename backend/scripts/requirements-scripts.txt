@@ -1,0 +1,11 @@
+# 脚本类依赖 —— 只有 scripts/ 下的运维脚本需要，主程序不依赖。
+# 不写进 requirements.txt，避免为了跑一个分析脚本给线上镜像装 100MB。
+#
+# 安装：
+#   cd backend
+#   ./.venv/Scripts/python.exe -m pip install -r scripts/requirements-scripts.txt
+
+pandas>=3.1.0          # scripts/analyze_reservations.py
+beautifulsoup4>=4.15.0 # scripts/collect_public_data.py
+lxml>=6.0.0            # BeautifulSoup 的解析器（比 html.parser 快很多）
+requests>=2.34.0       # 爬虫 HTTP 客户端（主程序已间接依赖，这里显式声明）

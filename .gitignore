@@ -28,6 +28,8 @@ backend/data/*.sqlite
 backend/data/*.sqlite-shm
 backend/data/*.sqlite-wal
 backend/data/threads.db
+# 爬虫与分析脚本的产出（运行期生成，不进仓库）
+backend/data/spider/
 
 # 本地数据库文件
 *.sqlite3

@@ -64,6 +64,10 @@
               <el-icon><ChatDotRound /></el-icon>
               AI智能助手
             </el-menu-item>
+            <el-menu-item index="/manager/agent-admin" v-if="userInfo?.role === 'admin'">
+              <el-icon><DataAnalysis /></el-icon>
+              Agent 运营后台
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main>
@@ -83,7 +87,8 @@ import {
   OfficeBuilding,
   Tickets,
   DocumentChecked,
-  ChatDotRound
+  ChatDotRound,
+  DataAnalysis
 } from '@element-plus/icons-vue'
 import { useUser } from '@/utils/user'
 import { logout } from '@/utils/auth'

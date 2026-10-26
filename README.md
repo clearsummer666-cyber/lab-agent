@@ -173,6 +173,7 @@ Agent 能力单独成包，11 个文件 / 约 1350 行，与 `api` / `services` 
 ## 三、功能模块
 
 - **Agent 对话**：知识库问答、数据查询、预约创建与取消，全程流式 + 工具执行过程可视化
+- **Agent 运营后台**（管理员）：调用日志、token 成本、耗时与成功率、按天趋势、工具调用排行 —— 每次对话在 `finally` 里旁路落一条记录，写失败不影响对话
 - **用户**：注册、登录、JWT 鉴权、个人信息与密码修改、用户管理（管理员）
 - **实验室**：实验室管理与列表（管理员 / 学生端）
 - **设备**：设备管理与列表
@@ -289,8 +290,8 @@ lab-agent/
 ├── backend/
 │   ├── app/
 │   │   ├── ai/           # ★ Agent 能力包（11 文件，见 1.4 节）
-│   │   ├── api/          # 路由层：auth / lab / equipment / reservation / user / files / ai
-│   │   ├── services/     # 业务服务：auth / lab / equipment / reservation / user / kb / agent
+│   │   ├── api/          # 路由层：auth / lab / equipment / reservation / user / files / ai / agent_admin
+│   │   ├── services/     # 业务服务：auth / lab / equipment / reservation / user / kb / agent / agent_run
 │   │   ├── models/       # SQLAlchemy 模型
 │   │   ├── schemas/      # Pydantic 数据校验
 │   │   ├── dependencies/ # FastAPI 依赖：get_current_user 等
@@ -299,6 +300,7 @@ lab-agent/
 │   │   ├── config.py     # pydantic-settings 配置
 │   │   ├── database.py   # 引擎 / SessionLocal / get_db
 │   │   └── main.py       # 应用入口、lifespan、CORS、路由挂载
+│   ├── scripts/          # 运维脚本：seed_data.py（演示数据）/ seed_agent_runs.py（后台演示数据）
 │   ├── data/
 │   │   ├── kb/           # RAG 知识库原文（4 篇 Markdown，入库）
 │   │   ├── chroma/       # 向量库（运行期生成，已 gitignore）

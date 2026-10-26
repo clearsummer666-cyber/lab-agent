@@ -2,8 +2,15 @@
   <div>
     <el-card>
       <template #header>
-        <div style="font-size: 16px; font-weight: bold">
-          AI智能助手
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <span style="font-size: 16px; font-weight: bold">AI智能助手</span>
+          <!-- 本次登录的剩余额度：重新登录会刷新（额度按登录会话计，不是按天） -->
+          <span v-if="quota && !quota.is_admin" style="font-size: 12px; color: #909399">
+            本次登录剩余 {{ quota.run_left }} 次 / {{ quota.token_left }} token
+          </span>
+          <span v-else-if="quota && quota.is_admin" style="font-size: 12px; color: #909399">
+            管理员不限额度
+          </span>
         </div>
       </template>
 
@@ -71,8 +78,8 @@
 </template>
 
 <script setup>
-import { chatStreamApi } from '@/api/ai'
-import { ref, reactive, nextTick } from 'vue'
+import { chatStreamApi, getQuotaApi } from '@/api/ai'
+import { ref, reactive, nextTick, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify' // 过滤危险的 HTML，防止 XSS 攻击
@@ -87,6 +94,20 @@ const messages = ref([
 const input = ref('')
 const loading = ref(false)
 const listRef = ref()
+// 今日额度（后端按 agent_runs 当天聚合算的）
+const quota = ref(null)
+
+const refreshQuota = async () => {
+  try {
+    const res = await getQuotaApi()
+    quota.value = res.data
+  } catch {
+    // 额度接口失败不影响聊天，静默忽略
+    quota.value = null
+  }
+}
+
+onMounted(refreshQuota)
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -157,6 +178,7 @@ const handleSend = async () => {
     loading.value = false
     assistant.status = ''
     scrollToBottom()
+    refreshQuota() // 每轮结束刷新剩余额度（后端是唯一账本，不在前端自己减）
   }
 }
 

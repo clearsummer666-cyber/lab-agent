@@ -9,9 +9,16 @@ def create_access_token(user_id: int) -> str:
     """创建JWT token"""
     # 必须用带时区的 UTC 时间：naive datetime 会被 PyJWT 当作 UTC 处理，
     # 而本机是 UTC+8，实际寿命会凭空多出 8 小时（配置 24h → 实测 32h）。
-    expire = datetime.now(timezone.utc) + timedelta(hours=settings.JWT_EXPIRE_HOURS)
+    now = datetime.now(timezone.utc)
+    expire = now + timedelta(hours=settings.JWT_EXPIRE_HOURS)
 
-    payload = {"user_id": user_id, "exp": expire}  # exp是固定key，不能写成别的
+    payload = {
+        "user_id": user_id,
+        "exp": expire,  # exp是固定key，不能写成别的
+        # iat（签发时间）：AI 额度按「本次登录」计，重新登录 → 新 token → 额度刷新。
+        # 用标准 claim，PyJWT 解码时自动按 UTC 时间戳处理。
+        "iat": now,
+    }
 
     return jwt.encode(
         payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
