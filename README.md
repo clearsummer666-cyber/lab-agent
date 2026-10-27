@@ -269,7 +269,8 @@ cd tests && python -m pytest
 cd backend/tests && ../.venv/Scripts/python.exe run_eval.py --critical --k 5
 ```
 
-端到端那两套（AI 对话 12 条 / 普通预约 13 条）要真 MySQL + 真模型，**脚本未随仓库提供**。
+端到端场景（AI 对话 / 普通预约）需要真 MySQL + 真模型，未纳入自动化脚本；
+核心逻辑已由上面的单元测试与离线评测覆盖。
 
 ### 4.2 前端
 
@@ -336,7 +337,6 @@ lab-agent/
 │   └── vite.config.js
 ├── docs/
 │   └── screenshots/      # README 界面预览图
-├── 资料pdf/              # 教程原文（本地，不提交）
 └── .gitignore
 ```
 
@@ -359,12 +359,10 @@ lab-agent/
 > 回落是**整套**的，不是逐字段 `or` —— 否则会出现 model 取 `AI_LLM_MODEL`、
 > key 取 `LLM_API_KEY` 的混搭，连上去就是 401。
 >
-> 2026-10-25 合并：原来 AI 部分单独放 `backend/.env.ai`，靠 `load_dotenv` 塞进环境变量；
-> 现在统一由 pydantic-settings 从 `.env` 读，少一个文件、少一个「clone 下来忘了 cp」的坑。
 > `.env` 被 `.gitignore` 忽略，**请勿提交真实密钥**。
 
 ---
 
 ## License
 
-MIT
+本项目基于 [MIT License](LICENSE) 开源。
