@@ -49,7 +49,13 @@
           />
         </el-form-item>
         <el-form-item label="备注">
-          <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" />
+          <el-input
+            type="textarea"
+            v-model="form.remark"
+            :maxlength="255"
+            show-word-limit
+            placeholder="请输入备注"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -82,9 +88,11 @@ const form = reactive({
   remark: ''
 })
 const rules = {
+  // 键必须与 form 字段名一致（startTime/endTime）：原来写成 start_time/end_time，
+  // prop 对不上规则，时间的必填校验一直是摆设（2026-11-03 修）
   date: [{ required: true, message: '请选择预约日期', trigger: 'change' }],
-  start_time: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
-  end_time: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
+  startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
+  endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
 }
 
 const handleSubmit = async () => {

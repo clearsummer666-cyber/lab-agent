@@ -1,8 +1,10 @@
 import asyncio
+import logging
 import re
 
 from datetime import datetime
 
+from sqlalchemy import and_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -34,6 +36,26 @@ def _normalize_time(value: str, field: str = "时间") -> str:
     return f"{hour:02d}:{minute:02d}"
 
 
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def _normalize_date(value: str) -> str:
+    """日期必须是 YYYY-MM-DD 且真实存在的日历日期。
+
+    库里 date 存字符串、比较全靠字符串序：形状不对的日期
+    （"2026-1-1" 会被字符串比较误判成过去，"2026-13-45" 会被当未来落库）
+    必须在这里挡死。AI 工具层只查形状（tools.py 的 len==10），真校验在这层。
+    """
+    text = (value or "").strip()
+    if not _DATE_RE.match(text):
+        raise BusinessException(message="日期格式应为 YYYY-MM-DD")
+    try:
+        datetime.strptime(text, "%Y-%m-%d")
+    except ValueError as exc:
+        raise BusinessException(message="日期不是有效的日历日期") from exc
+    return text
+
+
 def create_reservation(db: Session, current_user: User, data: ReservationCreateRequest):
     """创建预约记录。
 
@@ -48,11 +70,12 @@ def create_reservation(db: Session, current_user: User, data: ReservationCreateR
     # ── 1. 纯参数校验：不碰数据库，避免无谓地持锁 ──
     start_time = _normalize_time(data.start_time, "开始时间")
     end_time = _normalize_time(data.end_time, "结束时间")
-    if data.date < current_date:
+    book_date = _normalize_date(data.date)
+    if book_date < current_date:
         raise BusinessException(message="预约日期不能小于当前的日期")
     if end_time <= start_time:
         raise BusinessException(message="预约的结束时间必须晚于开始时间")
-    if data.date == current_date and start_time < current_time:
+    if book_date == current_date and start_time < current_time:
         raise BusinessException(message="预约开始时间不能小于当前的时间")
 
     # ── 2. 锁住实验室这一行：主键等值查询 → 精确行锁，不会间隙锁膨胀 ──
@@ -94,22 +117,31 @@ def create_reservation(db: Session, current_user: User, data: ReservationCreateR
             raise BusinessException(message="实验室设备不存在")
         if equipment.status != 1:
             raise BusinessException(message="实验室设备正在维修")
+        if equipment.lab_id != data.lab_id:
+            # 2026-11-03 补：原来只查存在+状态，REST 能把 B 实验室的设备挂到
+            # A 实验室名下预约，跨 lab 的设备占用互不可见 → 同设备可双订。
+            # AI 工具层一直有这层（tools.py），这里补齐成同一道防线。
+            raise BusinessException(message="设备不属于该实验室")
 
     # 区间重叠判定：已有 [start, end) 与新的 [start, end) 相交
     # 写成 start < new_end AND end > new_start，覆盖"包含/被包含/左交/右交"四种情况
+    # 占用语义（2026-11-03 统一，与 ai/repo.is_available 同口径）：
+    #   整室预约（equipment_id 为空）→ 与该实验室任何在用记录冲突
+    #   设备预约 → 与整室记录 + 同设备记录冲突；不同设备互不冲突
     query = db.query(Reservation).filter(
         Reservation.lab_id == data.lab_id,
-        Reservation.date == data.date,
+        Reservation.date == book_date,
         Reservation.status.in_([0, 1]),  # 0表示待审核  1已通过
         Reservation.start_time < end_time,
         Reservation.end_time > start_time,
     )
     if data.equipment_id:
         query = query.filter(
-            Reservation.equipment_id == data.equipment_id
-        )  # 预约实验室设备
-    else:
-        query = query.filter(Reservation.equipment_id.is_(None))  # 只预约实验室
+            or_(
+                Reservation.equipment_id.is_(None),  # 整室被占，设备也用不了
+                Reservation.equipment_id == data.equipment_id,  # 同设备被占
+            )
+        )
     res = query.first()
     if res:
         raise BusinessException(message="该时段已预约")
@@ -119,7 +151,7 @@ def create_reservation(db: Session, current_user: User, data: ReservationCreateR
         user_id=current_user.id,
         lab_id=data.lab_id,
         equipment_id=data.equipment_id,
-        date=data.date,
+        date=book_date,
         start_time=start_time,
         end_time=end_time,
         remark=data.remark,
@@ -184,7 +216,19 @@ def cancel_reservation(db: Session, current_user: User, reservation_id: int):
             raise BusinessException(
                 message="实验已开始或已结束，审核通过的预约无法取消"
             )
-    item.status = 3
+    # 条件原子更新（2026-11-03）：转移守卫放进 WHERE——读到旧状态与提交之间
+    # 若被 audit/expire 并发改过，这里影响行数为 0，报「当前状态无法取消」，
+    # 不再把别人转移后的状态覆盖掉。影响行数为 0 时不 commit（请求结束即回滚）。
+    updated = (
+        db.query(Reservation)
+        .filter(
+            Reservation.id == reservation_id,
+            Reservation.status == item.status,
+        )
+        .update({"status": 3}, synchronize_session=False)
+    )
+    if not updated:
+        raise BusinessException(message="当前状态无法取消")
     db.commit()
 
 
@@ -195,25 +239,43 @@ def audit_reservation(db: Session, reservation_id: int, status: int):
     item = db.query(Reservation).filter(Reservation.id == reservation_id).first()
     if not item:
         raise BusinessException(message="预约记录不存在")
-    if item.status != 0:
+    # 条件原子更新（2026-11-03）：WHERE status==0 是转移守卫——
+    # expire 的 60s 扫描并发把 0→3 时，这里影响行数为 0 → 拒绝审核，
+    # 不把已过期的预约覆盖成通过/拒绝。
+    updated = (
+        db.query(Reservation)
+        .filter(Reservation.id == reservation_id, Reservation.status == 0)
+        .update({"status": status}, synchronize_session=False)
+    )
+    if not updated:
         raise BusinessException(message="当前状态不支持审核")
-    item.status = status
     db.commit()
 
 
 def expire_pending_reservations():
+    """把过期的待审核单标成已取消（日期已过 / 当天已过结束时间）。
+
+    2026-11-03 改：原来把 status==0 全量拉进 Python 逐条比字符串，
+    现在单条条件 UPDATE 在 SQL 端过滤；WHERE 里的 status==0 同时是
+    转移守卫——与 audit/cancel 并发时不会覆盖别人的转移结果。
+    """
     db = SessionLocal()
     try:
         now = datetime.now()
         today = now.strftime("%Y-%m-%d")
         now_time = now.strftime("%H:%M")
-        items = db.query(Reservation).filter(Reservation.status == 0).all()
-        changed = False
-        for item in items:
-            if item.date < today or (item.date == today and item.end_time < now_time):
-                item.status = 3
-                changed = True
-        if changed:
+        updated = (
+            db.query(Reservation)
+            .filter(
+                Reservation.status == 0,
+                or_(
+                    Reservation.date < today,
+                    and_(Reservation.date == today, Reservation.end_time < now_time),
+                ),
+            )
+            .update({"status": 3}, synchronize_session=False)
+        )
+        if updated:
             db.commit()
     finally:
         db.close()
@@ -221,5 +283,10 @@ def expire_pending_reservations():
 
 async def run_expire_scan():
     while True:
-        expire_pending_reservations()
+        try:
+            expire_pending_reservations()
+        except Exception:  # noqa: BLE001
+            # 2026-11-03 补：不兜底的话一次 DB 抖动就让后台任务静默死亡，
+            # 过期扫描从此停摆到重启。记日志，下一轮接着扫。
+            logging.exception("[reservation] 过期扫描失败，60s 后重试")
         await asyncio.sleep(60)

@@ -111,6 +111,24 @@ def test_past_date_rejected(db, make_user, make_lab, yesterday):
         svc.create_reservation(db, user, _req(lab, yesterday, "10:00", "12:00"))
 
 
+@pytest.mark.parametrize("bad", ["2026-1-1", "2026/11/04", "明天", ""])
+def test_invalid_date_format_rejected(db, make_user, make_lab, bad):
+    """2026-11-03 补：date 只有字符串比较，形状不对的日期必须在这里挡死。"""
+    user = make_user()
+    lab = make_lab()
+    with pytest.raises(BusinessException, match="日期格式应为 YYYY-MM-DD"):
+        svc.create_reservation(db, user, _req(lab, bad, "10:00", "12:00"))
+
+
+@pytest.mark.parametrize("bad", ["2026-13-45", "2026-02-30"])
+def test_invalid_calendar_date_rejected(db, make_user, make_lab, bad):
+    """形状对但日历上不存在（13 月、2 月 30 日）也要拒。"""
+    user = make_user()
+    lab = make_lab()
+    with pytest.raises(BusinessException, match="不是有效的日历日期"):
+        svc.create_reservation(db, user, _req(lab, bad, "10:00", "12:00"))
+
+
 def test_lab_not_found(db, make_user, tomorrow):
     user = make_user()
     req = ReservationCreateRequest(
@@ -169,10 +187,6 @@ def test_equipment_under_repair_rejected(
         )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="已知缺口：service 层没校验设备是否属于该实验室（工具层拦了，REST 接口没拦）",
-)
 def test_equipment_must_belong_to_lab(
     db, make_user, make_lab, make_equipment, tomorrow
 ):
@@ -186,6 +200,57 @@ def test_equipment_must_belong_to_lab(
         svc.create_reservation(
             db, user, _req(lab_a, tomorrow, "10:00", "12:00", equipment_id=equipment.id)
         )
+
+
+# ───────────────────────── 占用语义（2026-11-03 统一） ─────────────────────────
+
+
+def test_device_booking_blocked_by_lab_row(
+    db, make_user, make_lab, make_reservation, make_equipment, tomorrow
+):
+    """整室被占 → 该室的设备也约不了同一时段（新语义：整室记录挡一切）。"""
+    user = make_user()
+    lab = make_lab()
+    equipment = make_equipment(lab)
+    make_reservation(user, lab, tomorrow, "10:00", "12:00", status=1)
+
+    with pytest.raises(BusinessException, match="该时段已预约"):
+        svc.create_reservation(
+            db, user, _req(lab, tomorrow, "10:00", "12:00", equipment_id=equipment.id)
+        )
+
+
+def test_lab_booking_blocked_by_device_row(
+    db, make_user, make_lab, make_reservation, make_equipment, tomorrow
+):
+    """设备被占 → 整室也约不了同一时段（设备使用者占着房间）。"""
+    user = make_user()
+    lab = make_lab()
+    equipment = make_equipment(lab)
+    make_reservation(
+        user, lab, tomorrow, "10:00", "12:00", status=1, equipment_id=equipment.id
+    )
+
+    with pytest.raises(BusinessException, match="该时段已预约"):
+        svc.create_reservation(db, user, _req(lab, tomorrow, "10:00", "12:00"))
+
+
+def test_different_devices_same_slot_ok(
+    db, make_user, make_lab, make_reservation, make_equipment, tomorrow
+):
+    """不同设备互不冲突 —— 设备预约只挡整室记录和同设备记录。"""
+    user = make_user()
+    lab = make_lab()
+    eq_a = make_equipment(lab, name="示波器A")
+    eq_b = make_equipment(lab, name="示波器B")
+    make_reservation(
+        user, lab, tomorrow, "10:00", "12:00", status=1, equipment_id=eq_a.id
+    )
+
+    svc.create_reservation(
+        db, user, _req(lab, tomorrow, "10:00", "12:00", equipment_id=eq_b.id)
+    )
+    assert db.query(Reservation).count() == 2
 
 
 # ───────────────────────── 唯一索引兜底 ─────────────────────────
@@ -348,3 +413,37 @@ def test_student_only_sees_own_reservations(
     assert alice_page.total == 1
     assert alice_page.list[0].user_name == "alice"
     assert admin_page.total == 2
+
+
+# ───────────────────────── 过期扫描（2026-11-03 改单条条件 UPDATE） ─────────────────────────
+
+
+def test_expire_marks_overdue_pending_only(
+    db, make_user, make_lab, make_reservation, yesterday, tomorrow
+):
+    """日期已过的待审核单标成已取消；未过期的不动。"""
+    user = make_user()
+    lab = make_lab()
+    overdue = make_reservation(user, lab, yesterday, "10:00", "12:00", status=0)
+    future = make_reservation(user, lab, tomorrow, "10:00", "12:00", status=0)
+
+    svc.expire_pending_reservations()
+
+    db.refresh(overdue)
+    db.refresh(future)
+    assert overdue.status == 3
+    assert future.status == 0
+
+
+def test_expire_does_not_touch_approved(
+    db, make_user, make_lab, make_reservation, yesterday
+):
+    """过期扫描只处理待审核(0)：已通过/已拒绝/已取消一律不动。"""
+    user = make_user()
+    lab = make_lab()
+    approved = make_reservation(user, lab, yesterday, "10:00", "12:00", status=1)
+
+    svc.expire_pending_reservations()
+
+    db.refresh(approved)
+    assert approved.status == 1

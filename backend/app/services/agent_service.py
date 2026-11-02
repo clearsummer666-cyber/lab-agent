@@ -156,6 +156,18 @@ def _tool_output_preview(output: Any, limit: int = 200) -> str:
     return text if len(text) <= limit else text[:limit] + "…"
 
 
+def _should_emit_token(event: dict) -> bool:
+    """token 只从主对话链路放行（2026-11-03 补：文档早就宣称过滤，代码一直没做）。
+
+    黑名单制：只挡明确的 tools 节点——正常架构里模型流式输出只发生在
+    主对话节点，tools 节点冒出的模型调用就是内部噪声。metadata 缺失或
+    节点名未知时放行：宁可多吐一个碎片也不吞正文
+    （和 router.pick_tool_names 的「宁可多挂不可少挂」是同一个不对称原则）。
+    """
+    node = (event.get("metadata") or {}).get("langgraph_node")
+    return node != "tools"
+
+
 async def stream_agent(
     db: Session, current_user: User, data: ChatRequest
 ) -> AsyncIterator[dict]:
@@ -230,6 +242,8 @@ async def stream_agent(
                 usage_in += um.get("input_tokens", 0) or 0
                 usage_out += um.get("output_tokens", 0) or 0
             elif kind == "on_chat_model_stream":
+                if not _should_emit_token(event):
+                    continue
                 text_chunk = _chunk_text((event.get("data") or {}).get("chunk"))
                 if text_chunk:
                     yield {"type": "token", "content": text_chunk}

@@ -9,6 +9,8 @@ MemoryRepo 留在 lab-ai 里给评测和教学用。
 from contextlib import contextmanager
 from typing import Any
 
+from sqlalchemy import or_
+
 
 class SqlRepo:
     """接原项目的 MySQL。真交付用这个。
@@ -121,22 +123,34 @@ class SqlRepo:
                     "spec": row.spec or "", "qty": row.quantity, "status": row.status}
 
     # ── 时段冲突 ──────────────────────────────────────
-    def is_available(self, lab_id: int, date: str, start: str, end: str) -> bool:
+    def is_available(self, lab_id: int, date: str, start: str, end: str,
+                     equipment_id: int | None = None) -> bool:
+        """时段占用预检，口径与 service 的重叠判定严格一致（2026-11-03 对齐）。
+
+        - 只有 待审核(0)/已通过(1) 算占用——原来 status != 3 会把「已拒绝」
+          也当占用，导致 AI 拒掉 REST 能约的时段；
+        - equipment_id 为空 = 整室预约，任何在用记录都冲突；
+        - 传 equipment_id = 设备预约，只有 整室记录 + 同设备记录 冲突，
+          不同设备互不冲突（与 reservation_service 的占用语义同一条规则）。
+        """
         from app.models.reservation import Reservation
 
         with self._session() as s:
-            # 区间重叠：[start, end) 与已有区间相交。已取消(3)不算占用
-            n = (
-                s.query(Reservation)
-                .filter(
-                    Reservation.lab_id == lab_id,
-                    Reservation.date == date,
-                    Reservation.status != 3,
-                    Reservation.start_time < end,
-                    Reservation.end_time > start,
+            filters = [
+                Reservation.lab_id == lab_id,
+                Reservation.date == date,
+                Reservation.status.in_([0, 1]),
+                Reservation.start_time < end,
+                Reservation.end_time > start,
+            ]
+            if equipment_id is not None:
+                filters.append(
+                    or_(
+                        Reservation.equipment_id.is_(None),
+                        Reservation.equipment_id == equipment_id,
+                    )
                 )
-                .count()
-            )
+            n = s.query(Reservation).filter(*filters).count()
             return n == 0
 
     def list_availability(self, date: str, lab_name: str = "") -> list[dict]:
@@ -150,7 +164,8 @@ class SqlRepo:
                     for x in s.query(Reservation).filter(
                         Reservation.lab_id == lab["id"],
                         Reservation.date == date,
-                        Reservation.status != 3,
+                        # 与 is_available/service 同口径：已拒绝不算占用
+                        Reservation.status.in_([0, 1]),
                     ).all()
                 ]
                 open_t, close_t = lab["open"].split("-")

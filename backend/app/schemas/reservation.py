@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ReservationCreateRequest(BaseModel):
@@ -12,7 +12,8 @@ class ReservationCreateRequest(BaseModel):
     # service 时被 Pydantic 丢掉了（schema 里没这个字段），校验形同虚设。
     # 注意：reservations 表里**没有** people 列，这个字段只用于校验，不落库。
     people: int | None = None
-    remark: str | None = None
+    # 表列是 String(255)：不设上限时超长备注会撞 MySQL 1406 走 500（2026-11-03 补）
+    remark: str | None = Field(default=None, max_length=255)
 
 
 class ReservationResponse(BaseModel):

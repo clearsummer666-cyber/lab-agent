@@ -158,3 +158,53 @@ def test_no_arg_tools_return_json(agent_tools):
     for name in ("list_open_labs", "list_my_reservations"):
         parsed = json.loads(tools[name].func())
         assert isinstance(parsed, dict), f"{name} 返回的不是 JSON 对象"
+
+
+# ───────────────────── 占用口径（2026-11-03 与 service 对齐） ─────────────────────
+
+
+def test_rejected_reservation_does_not_block(
+    db, make_user, make_lab, make_reservation, tomorrow
+):
+    """已拒绝(2)不算占用 —— 原来 is_available 用 status != 3 会误挡。"""
+    user = make_user()
+    lab = make_lab()
+    make_reservation(user, lab, tomorrow, "10:00", "12:00", status=2)
+
+    repo = SqlRepo(db, user_id=user.id)
+    assert repo.is_available(lab.id, tomorrow, "10:00", "12:00") is True
+
+
+def test_lab_row_blocks_device_precheck(
+    db, make_user, make_lab, make_reservation, make_equipment, tomorrow
+):
+    """整室被占 → 设备预约的预检也要挡（与 service 占用语义一致）。"""
+    user = make_user()
+    lab = make_lab()
+    equipment = make_equipment(lab)
+    make_reservation(user, lab, tomorrow, "10:00", "12:00", status=0)
+
+    repo = SqlRepo(db, user_id=user.id)
+    assert (
+        repo.is_available(lab.id, tomorrow, "10:00", "12:00", equipment_id=equipment.id)
+        is False
+    )
+
+
+def test_other_device_does_not_block_device_precheck(
+    db, make_user, make_lab, make_reservation, make_equipment, tomorrow
+):
+    """别的设备被占 → 这台设备仍可约（不同设备互不冲突）。"""
+    user = make_user()
+    lab = make_lab()
+    eq_a = make_equipment(lab, name="示波器A")
+    eq_b = make_equipment(lab, name="示波器B")
+    make_reservation(
+        user, lab, tomorrow, "10:00", "12:00", status=0, equipment_id=eq_a.id
+    )
+
+    repo = SqlRepo(db, user_id=user.id)
+    assert (
+        repo.is_available(lab.id, tomorrow, "10:00", "12:00", equipment_id=eq_b.id)
+        is True
+    )

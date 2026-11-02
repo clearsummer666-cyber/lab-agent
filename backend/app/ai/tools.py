@@ -171,7 +171,9 @@ def make_tools(store: Any = None, repo: SqlRepo | None = None,
         lab = repo.get_lab(lab_id)
         if lab is None:
             return _err(f"没有 id={lab_id} 的实验室")
-        if people > lab["capacity"]:
+        # capacity=0 视为未设置（列默认 0），与 service 的 if capacity and … 同口径；
+        # 原来 0 会让任何人数都被拒（"最多容纳 0 人"）
+        if lab["capacity"] and people > lab["capacity"]:
             return _err(
                 f"{lab['name']}最多容纳 {lab['capacity']} 人，你说的 {people} 人超出容量"
             )
@@ -188,7 +190,10 @@ def make_tools(store: Any = None, repo: SqlRepo | None = None,
                 )
             if eq["status"] != 1:
                 return _err(f"设备「{eq['name']}」当前在维修中，约不了")
-        if not repo.is_available(lab_id, date, start_time, end_time):
+        # 预检带上 equipment_id：设备预约按「整室 + 同设备」口径查，
+        # 不再被别的设备的记录误挡（口径见 repo.is_available）
+        if not repo.is_available(lab_id, date, start_time, end_time,
+                                 equipment_id=equipment_id):
             return _err(f"{date} {start_time}-{end_time} 已被占用，约不上")
 
         # ★ 暂停点。恢复时整个工具会从头重跑（第 14 课实测）
