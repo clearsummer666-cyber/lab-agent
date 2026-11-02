@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
+from app.ai import session as ai_session
 from app.common.response import Response
 from app.database import get_db
 from app.dependencies.auth import get_current_user, get_token_issued_at
@@ -82,3 +83,10 @@ async def chat_stream(
             "X-Accel-Buffering": "no",  # 有 Nginx 时避免缓冲整段再吐
         },
     )
+
+
+@router.post("/session/reset")
+def reset_chat_session(current_user: User = Depends(get_current_user)):
+    """强制开一个新会话：session_no +1，返回新 thread_id，旧上下文不再带入。"""
+    thread_id = ai_session.reset_session(current_user.id)
+    return Response.success(data={"thread_id": thread_id})

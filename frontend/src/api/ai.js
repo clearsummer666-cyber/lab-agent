@@ -23,6 +23,16 @@ export function getQuotaApi() {
 }
 
 /**
+ * 开启新对话：后端强制 session_no +1，返回新 thread_id，旧上下文不再带入。
+ */
+export function resetSessionApi() {
+  return request({
+    url: '/api/ai/session/reset',
+    method: 'post'
+  })
+}
+
+/**
  * SSE 流式对话。onEvent(evt) 每收到一条 data 回调一次。
  */
 export async function chatStreamApi(data, onEvent) {

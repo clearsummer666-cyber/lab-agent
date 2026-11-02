@@ -142,7 +142,12 @@ def create_reservation(db: Session, current_user: User, data: ReservationCreateR
                 Reservation.equipment_id == data.equipment_id,  # 同设备被占
             )
         )
-    res = query.first()
+    # ★ 重叠查询必须是锁定读（FOR UPDATE），不能是普通一致性读（2026-11-03 压测抓到的真 bug）：
+    #   RR 隔离级别下快照在事务第一条读（鉴权依赖查 User）就建立了——早于并发赢家的 commit；
+    #   普通 SELECT 读旧快照看不见刚提交的冲突行 → 放行 → 重复落库（唯一索引又因 NULL 不拦）。
+    #   实测：8 线程×15 轮出现 5 条完全相同的整室预约；改锁定读后恰好 1 成功 119 拒绝。
+    #   锁定读读最新提交数据、绕过快照，配合 Lab 行锁才是完整防线。
+    res = query.with_for_update().first()
     if res:
         raise BusinessException(message="该时段已预约")
 

@@ -4,13 +4,16 @@
       <template #header>
         <div style="display: flex; justify-content: space-between; align-items: center">
           <span style="font-size: 16px; font-weight: bold">AI智能助手</span>
-          <!-- 本次登录的剩余额度：重新登录会刷新（额度按登录会话计，不是按天） -->
-          <span v-if="quota && !quota.is_admin" style="font-size: 12px; color: #909399">
-            本次登录剩余 {{ quota.run_left }} 次 / {{ quota.token_left }} token
-          </span>
-          <span v-else-if="quota && quota.is_admin" style="font-size: 12px; color: #909399">
-            管理员不限额度
-          </span>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <!-- 本次登录的剩余额度：重新登录会刷新（额度按登录会话计，不是按天） -->
+            <span v-if="quota && !quota.is_admin" style="font-size: 12px; color: #909399">
+              本次登录剩余 {{ quota.run_left }} 次 / {{ quota.token_left }} token
+            </span>
+            <span v-else-if="quota && quota.is_admin" style="font-size: 12px; color: #909399">
+              管理员不限额度
+            </span>
+            <el-button size="small" :disabled="loading" @click="handleNewChat">新对话</el-button>
+          </div>
         </div>
       </template>
 
@@ -78,7 +81,7 @@
 </template>
 
 <script setup>
-import { chatStreamApi, getQuotaApi } from '@/api/ai'
+import { chatStreamApi, getQuotaApi, resetSessionApi } from '@/api/ai'
 import { ref, reactive, nextTick, onMounted, onActivated, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { marked } from 'marked'
@@ -231,6 +234,19 @@ const handleSend = async () => {
     persist() // 流式期间 watch 跳过了，这里补存一次最终结果
     scrollToBottom()
     refreshQuota() // 每轮结束刷新剩余额度（后端是唯一账本，不在前端自己减）
+  }
+}
+
+// 开启新对话：后端 session_no +1，前端回到欢迎语（流式进行中按钮已禁用）
+const handleNewChat = async () => {
+  try {
+    await resetSessionApi()
+    messages.value = [{ ...WELCOME }]
+    persist()
+    input.value = ''
+    ElMessage.success('已开启新对话')
+  } catch (err) {
+    ElMessage.error(err.message || '开启新对话失败')
   }
 }
 
