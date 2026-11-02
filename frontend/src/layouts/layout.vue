@@ -71,7 +71,12 @@
           </el-menu>
         </el-aside>
         <el-main>
-          <router-view />
+          <!-- keep-alive 缓存 AIChat：切到别的菜单再回来，对话不丢 -->
+          <router-view v-slot="{ Component }">
+            <keep-alive include="AIChat">
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
         </el-main>
       </el-container>
     </el-container>

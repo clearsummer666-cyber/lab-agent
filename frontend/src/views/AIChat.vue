@@ -79,18 +79,41 @@
 
 <script setup>
 import { chatStreamApi, getQuotaApi } from '@/api/ai'
-import { ref, reactive, nextTick, onMounted } from 'vue'
+import { ref, reactive, nextTick, onMounted, onActivated, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify' // 过滤危险的 HTML，防止 XSS 攻击
 
-const messages = ref([
-  {
-    role: 'assistant',
-    content:
-      '你好，我是实验室预约助手。可以问规则和开放实验室，也可以说「帮我预约明天下午的实验室」'
+// keep-alive 的 include 认的是组件名，<script setup> 必须显式声明
+defineOptions({ name: 'AIChat' })
+
+const STORAGE_KEY = 'labpilot:ai-chat'
+const WELCOME = {
+  role: 'assistant',
+  content:
+    '你好，我是实验室预约助手。可以问规则和开放实验室，也可以说「帮我预约明天下午的实验室」'
+}
+
+// 进页面时先尝试从 sessionStorage 恢复，没有就用欢迎语
+const loadMessages = () => {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY)
+    if (!raw) return [{ ...WELCOME }]
+    const saved = JSON.parse(raw)
+    if (!Array.isArray(saved) || !saved.length) return [{ ...WELCOME }]
+    // 恢复时把过程态清掉，避免残留「正在…」和旧的工具流水
+    return saved.map((m) => ({
+      role: m.role,
+      content: m.content || '',
+      status: '',
+      steps: []
+    }))
+  } catch {
+    return [{ ...WELCOME }]
   }
-])
+}
+
+const messages = ref(loadMessages())
 const input = ref('')
 const loading = ref(false)
 const listRef = ref()
@@ -107,7 +130,35 @@ const refreshQuota = async () => {
   }
 }
 
-onMounted(refreshQuota)
+// 落盘：只存 role/content，截断单条 + 限制条数，防 sessionStorage 超限
+const persist = () => {
+  try {
+    const plain = messages.value
+      .filter((m) => m.role === 'user' || m.role === 'assistant')
+      .map(({ role, content }) => ({ role, content: (content || '').slice(0, 4000) }))
+      .slice(-50)
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(plain))
+  } catch {
+    // 存不进去就算了，不影响对话
+  }
+}
+
+// 流式输出时每个 token 都会改 messages，同步写会卡，所以流式中跳过；
+// 一轮结束在 finally 里补存一次。
+watch(messages, () => {
+  if (!loading.value) persist()
+}, { deep: true })
+
+onMounted(() => {
+  refreshQuota()
+  scrollToBottom()
+})
+
+// 被 keep-alive 缓存后 onMounted 只跑一次，切回来走这里补一次滚动和额度刷新
+onActivated(() => {
+  scrollToBottom()
+  refreshQuota()
+})
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -177,6 +228,7 @@ const handleSend = async () => {
   } finally {
     loading.value = false
     assistant.status = ''
+    persist() // 流式期间 watch 跳过了，这里补存一次最终结果
     scrollToBottom()
     refreshQuota() // 每轮结束刷新剩余额度（后端是唯一账本，不在前端自己减）
   }
