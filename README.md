@@ -335,10 +335,23 @@ lab-agent/
 │   │   └── main.js
 │   ├── package.json
 │   └── vite.config.js
+├── eval_suite/           # ★ 独立评测工程（RAG 消融 / Agent 配对回归 / 报表）
+│   ├── rag_ablation_runner.py   # A/B/C/D 四组检索策略消融
+│   ├── agent_eval_runner.py     # 多轮 + 故障注入配对回归
+│   ├── run_all_evals.py         # 一键重跑并写回报告
+│   └── reports/                 # JSON + Markdown 报告（FINAL_RESUME_METRICS.md 在此）
+├── data/                 # 评测夹具库（lab_eval.db / eval_threads.db，运行期生成，已 gitignore）
+├── tests/
+│   └── test_lab_eval.py  # 合并后验收：独立评测库 + 真实 HTTP 路径（12 项）
 ├── docs/
 │   └── screenshots/      # README 界面预览图
+├── _materials/           # 非代码资料：课程 PDF / AI 协作工作区 / 环境备份（已 gitignore）
 └── .gitignore
 ```
+
+> `_materials/` 只放课程资料、AI 协作工作区与本地备份，**不属于项目代码**；
+> 根目录 `.workbuddy-ai` 是指向 `_materials/AI协作工作区` 的目录联接，下面这些旧路径照旧可用。
+> 细节见 `_materials/README.md`。
 
 ---
 
