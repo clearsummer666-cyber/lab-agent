@@ -59,6 +59,16 @@ const router = createRouter({
           component: () => import('@/views/AIChat.vue')
         },
         {
+          path: 'profile',
+          name: 'Profile',
+          component: () => import('@/views/Profile.vue')
+        },
+        {
+          path: 'password',
+          name: 'Password',
+          component: () => import('@/views/Password.vue')
+        },
+        {
           // Agent 运营后台：调用日志 / token 成本 / 任务状态 / 效果评估
           path: 'agent-admin',
           name: 'AgentAdmin',
