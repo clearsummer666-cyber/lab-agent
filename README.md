@@ -345,13 +345,8 @@ lab-agent/
 │   └── test_lab_eval.py  # 合并后验收：独立评测库 + 真实 HTTP 路径（12 项）
 ├── docs/
 │   └── screenshots/      # README 界面预览图
-├── _materials/           # 非代码资料：课程 PDF / AI 协作工作区 / 环境备份（已 gitignore）
 └── .gitignore
 ```
-
-> `_materials/` 只放课程资料、AI 协作工作区与本地备份，**不属于项目代码**；
-> 根目录 `.workbuddy-ai` 是指向 `_materials/AI协作工作区` 的目录联接，下面这些旧路径照旧可用。
-> 细节见 `_materials/README.md`。
 
 ---
 
