@@ -15,9 +15,6 @@ import copy
 import random
 import time
 
-from langchain_core.messages import AIMessage
-from langgraph.types import Command
-
 import data
 from eval.core import EnvFailure, RunResult
 
@@ -149,21 +146,29 @@ class RealAgent:
 
     MAX_RETRY = 3
 
-    def __init__(self, gap: float = 3.0, debug: bool = False):
-        from agent import build_agent
+    def __init__(self, db=None, current_user=None, gap: float = 3.0,
+                 debug: bool = False):
+        # 重依赖延迟到真正构造 RealAgent 时再导入；ScriptedAgent 无需模型栈。
+        from app.ai import build_agent
 
+        if db is None or current_user is None:
+            raise EnvFailure("RealAgent 需要 db 与 current_user；离线评测请使用 ScriptedAgent")
         self._build = build_agent
-        self.agent = build_agent()
+        self._db = db
+        self._current_user = current_user
+        self.agent = build_agent(db, current_user)
         self._seq = 0
         self.gap = gap
         self.debug = debug
 
     def run(self, task) -> RunResult:
+        from langchain_core.messages import AIMessage
+
         before = len(data.BOOKINGS)
         self._seq += 1
         # ★ 每条用例一个全新的 Agent 实例：幂等表和 checkpointer 都是干净的。
         #   不这样做，前一条用例提交过的时段会让后一条「幂等命中」而假通过。
-        self.agent = self._build()
+        self.agent = self._build(self._db, self._current_user)
         cfg = {"configurable": {"thread_id": f"{task.id}-{self._seq}"}}
 
         out = None
@@ -180,7 +185,7 @@ class RealAgent:
             tokens_in += um.get("input_tokens", 0) or 0
             tokens_out += um.get("output_tokens", 0) or 0
 
-        from llm_utils import text_of
+        from app.services.agent_service import _text_of
 
         return RunResult(
             task_id=task.id,
@@ -189,7 +194,7 @@ class RealAgent:
             slots_after=self.agent.get_state(cfg).values.get("slots") or {},
             intent=None,                      # 真 Agent 没有显式 intent 字段
             tool_calls=calls,
-            reply=text_of(out["messages"][-1]),
+            reply=_text_of(out["messages"][-1]),
             approved=task.approve,
             tokens_in=tokens_in,
             tokens_out=tokens_out,
@@ -224,6 +229,8 @@ class RealAgent:
         ★ max_rounds 是保险：如果模型反复触发 interrupt，这里会死循环。
           超过上限就停，让评测记成一条失败，而不是把整轮评测挂住。
         """
+        from langgraph.types import Command
+
         rounds = 0
         while out.get("__interrupt__"):
             if rounds >= max_rounds:

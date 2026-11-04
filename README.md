@@ -363,6 +363,71 @@ lab-agent/
 
 ---
 
+## 七、RAG 与受控预约 Agent 评测
+
+原 `/api/ai/*` 前端接口保持不变；受控链路复用同一套 `Base`、同步 `SessionLocal`
+和 MySQL 业务表，新增：
+
+- `POST /api/rag/query`：条款级规则检索与静态 `rule_codes`
+- `POST /api/agent/chat`：显式状态机 + 5 个受控预约工具
+- `GET /api/traces/{trace_id}`：读取 `agent_runs` 旁路轨迹
+- `GET /api/reservations/{reservation_id}`：查询预约事实
+- `POST /api/test/environment/reset`：仅 `EVAL_MODE` 下可用的独立评测库重置
+
+正常预约主链路直接查询时段并生成预览，不调用规则检索；仅当资质不足或用户主动询问规则时
+才触发 `search_rules`。用户修改日期、时间或设备时，旧预览立即置为 `INVALIDATED`；
+确认阶段先按 `idempotency_key` 幂等返回，再锁定实验室行、校验无重叠并写入预约，
+最终将预览置为 `CONSUMED`。
+
+### 7.1 运行评测
+
+```powershell
+backend\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m eval_suite.rag_ablation_runner
+python -m eval_suite.agent_eval_runner
+python -m eval_suite.run_all_evals
+python -m pytest tests/test_lab_eval.py -q
+```
+
+评测环境由 `eval_suite.bootstrap` 在导入 `app.database` 前显式配置，固定使用
+`data/lab_eval.db`。生产服务不会因为导入评测包而改写环境变量或删除正在使用的数据库；
+非评测模式下 `/api/test/environment/reset` 返回 404。
+
+### 7.2 RAG 四组消融实测
+
+6 条黄金用例，Top-3，RRF `k=60`；使用本地特征哈希向量、jieba 与 rank_bm25，
+不依赖外部模型。
+
+| 指标 | A 固定块+向量 | B 条款+混合RRF | C +元数据过滤 | D +重排+父块 |
+|---|---:|---:|---:|---:|
+| Hit Rate@3 | 83.33% | 83.33% | 83.33% | 83.33% |
+| MRR | 0.8333 | 0.6667 | 0.8333 | 0.8333 |
+| Top-1 命中率 | 66.67% | 50.00% | 83.33% | 83.33% |
+| 过期规则误召回率 ↓ | 33.33% | 33.33% | 0.00% | 0.00% |
+| 关键条件覆盖率 | 88.89% | 88.89% | 100.00% | 100.00% |
+| 期望条款召回率@3 | 83.33% | 83.33% | 93.33% | 93.33% |
+| 静态规则码覆盖率 | 0.00% | 90.00% | 100.00% | 100.00% |
+
+### 7.3 Agent 配对回归实测
+
+| 版本 | 通过数 | 通过率 |
+|---|---:|---:|
+| Baseline v1 | 3/6 | 50.00% |
+| Candidate v2 | 6/6 | 100.00% |
+
+- FIXED：**3**；REGRESSED：**0**
+- Candidate 数据库状态 / 工具轨迹 / 语义条件：**100% / 100% / 100%**
+- 重复确认及超时恢复场景的重复写入：**0 条**
+
+完整结果与复现命令见
+[eval_suite/reports/FINAL_RESUME_METRICS.md](eval_suite/reports/FINAL_RESUME_METRICS.md)、
+[eval_suite/reports/rag_ablation_report.json](eval_suite/reports/rag_ablation_report.json)
+和
+[eval_suite/reports/agent_eval_report.json](eval_suite/reports/agent_eval_report.json)。
+
+---
+
 ## License
 
 本项目基于 [MIT License](LICENSE) 开源。

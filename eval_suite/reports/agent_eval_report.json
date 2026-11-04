@@ -1,0 +1,644 @@
+{
+  "generated_at": "2026-11-04T09:14:42.256590+00:00",
+  "transport": "FastAPI TestClient HTTP + X-Fault-Inject + isolated SQLite",
+  "case_count": 6,
+  "cases": [
+    {
+      "case_id": "agent_001_normal_multi_turn_and_interrupt",
+      "baseline": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "search_available_slots",
+            "prepare_reservation",
+            "search_rules",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "已找到以下可用时段，请选择后生成预约预览。",
+          "预约预览已生成，核对时段后请明确确认。",
+          "依据现行规则：第二章 取消预约与违约惩戒。第三条 预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。第四条 自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。\n第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。",
+          "预约确认成功，已核对数据库状态。"
+        ],
+        "trace_ids": [
+          "trace_eecbdca5aadd4e33974ad4404885e718",
+          "trace_8aa91b75b6d8408faa6f36717dbcb99c",
+          "trace_0468f74f0f0c47b3b6c794a37689f5b1",
+          "trace_6b2f3fb1eee84152ab67159a6124c39e"
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200
+        ]
+      },
+      "candidate": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "search_available_slots",
+            "prepare_reservation",
+            "search_rules",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "已找到以下可用时段，请选择后生成预约预览。",
+          "预约预览已生成，核对时段后请明确确认。",
+          "依据现行规则：第二章 取消预约与违约惩戒。第三条 预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。第四条 自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。\n第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。",
+          "预约确认成功，已核对数据库状态。"
+        ],
+        "trace_ids": [
+          "trace_4fbc0f80b40741e8a6d8f51f440c97ef",
+          "trace_2fb79cf72efd46a88473adf8625e670a",
+          "trace_441160a0dc924a4e9420d28a8a668f9f",
+          "trace_01b7e6f6f8e64b748612e276599f6107"
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200
+        ]
+      },
+      "regression_status": "UNCHANGED_PASS"
+    },
+    {
+      "case_id": "agent_002_modify_invalidates_preview",
+      "baseline": {
+        "passed": false,
+        "business": {
+          "passed": false,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true,
+            "reserved_date": true,
+            "invalidated_preview": false
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "已按新条件生成预约预览，请确认。",
+          "预约确认成功，已核对数据库状态。"
+        ],
+        "trace_ids": [
+          "trace_0e0858f40723463da335da68730f1add",
+          "trace_43cfa06206104d62912e50f52d05d447",
+          "trace_809784c2ec924da79f099a99298a0be8"
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200
+        ]
+      },
+      "candidate": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true,
+            "reserved_date": true,
+            "invalidated_preview": true
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "已按新条件生成预约预览，请确认。",
+          "预约确认成功，已核对数据库状态。"
+        ],
+        "trace_ids": [
+          "trace_af99afdb43034c4ebe4085402701a128",
+          "trace_62a69edac57447c3b66b1296f2762cd0",
+          "trace_d93bd57d154940cf83fb831eea2036d5"
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200
+        ]
+      },
+      "regression_status": "FIXED"
+    },
+    {
+      "case_id": "agent_003_unqualified_user_blocked",
+      "baseline": {
+        "passed": false,
+        "business": {
+          "passed": false,
+          "checks": {
+            "reservation_count": false,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": false
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": false,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": false,
+            "timeout_reconciliation": true,
+            "required_citation": false
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": false,
+          "checks": {
+            "keyword": true,
+            "required_citation": false
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "预约已确认。"
+        ],
+        "trace_ids": [
+          "trace_37c94bfc4b53448caa7361348f5164fb",
+          "trace_4d711a7d7bd046d5a7fb429816a776bd"
+        ],
+        "http_statuses": [
+          200,
+          200
+        ]
+      },
+      "candidate": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 0,
+          "reservation_rows": 0
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true,
+            "required_citation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "search_rules"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "FAILED",
+        "answers": [
+          "依据现行规则：第一章 PCR设备准入与培训前置约束。第一条 预约生物实验室定量PCR仪（PCR）的用户，必须同时具备校级实验室安全培训合格记录与《分子生物学PCR设备专项实操认证》。第二条 培训资质采取严格前置校验原则：未获得PCR专项实操认证的用户，系统严禁先占位预约再补办培训；违规代约者双方均记违约2次。\n第二章 取消预约与违约惩戒。第三条 预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。第四条 自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。",
+          "没有有效预览，已阻止强制写入。"
+        ],
+        "trace_ids": [
+          "trace_0cd1210002e5486fa8d4a5a1854adefd",
+          "trace_bebe08ab3c674e9eafa83dd3089b1833"
+        ],
+        "http_statuses": [
+          200,
+          200
+        ]
+      },
+      "regression_status": "FIXED"
+    },
+    {
+      "case_id": "agent_004_fault_slot_taken_before_confirm",
+      "baseline": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 0,
+          "reservation_rows": 0
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "FAILED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "预约未完成：该时段已被占用。"
+        ],
+        "trace_ids": [
+          "trace_2f067ef60b46494193c0db6e1157af7c",
+          "trace_87fa950f9a264dd7b308d211c4bf3748"
+        ],
+        "http_statuses": [
+          200,
+          200
+        ]
+      },
+      "candidate": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 0,
+          "reservation_rows": 0
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "FAILED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "预约未完成：该时段已被占用。"
+        ],
+        "trace_ids": [
+          "trace_800c58ead7ff4de0a6b0aba472899142",
+          "trace_e12a737ad0f04343876fdc6e328fa770"
+        ],
+        "http_statuses": [
+          200,
+          200
+        ]
+      },
+      "regression_status": "UNCHANGED_PASS"
+    },
+    {
+      "case_id": "agent_005_fault_timeout_after_write_idempotency",
+      "baseline": {
+        "passed": false,
+        "business": {
+          "passed": false,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": false
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": false,
+          "checks": {
+            "ordered_tools": false,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "FAILED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "预约未完成：工具响应超时。"
+        ],
+        "trace_ids": [
+          "trace_9a7d6102b69c4ca5b0f8a6dc28757b69",
+          "trace_40ba1e92562f4c2bbf77e8fb50326bef"
+        ],
+        "http_statuses": [
+          200,
+          200
+        ]
+      },
+      "candidate": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation",
+            "get_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "预约确认成功，已核对数据库状态。"
+        ],
+        "trace_ids": [
+          "trace_121c0b7aa77542fab42082e0ac531a9f",
+          "trace_044b62da9e93451eacd5bb4ef0f36a0d"
+        ],
+        "http_statuses": [
+          200,
+          200
+        ]
+      },
+      "regression_status": "FIXED"
+    },
+    {
+      "case_id": "agent_006_fault_duplicate_confirm",
+      "baseline": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "预约确认成功，已核对数据库状态。",
+          "预约确认成功，已核对数据库状态。"
+        ],
+        "trace_ids": [
+          "trace_dc202a99fadf47498b09493a96940058",
+          "trace_662c810c3aa64c8f8662de4cc4c67740",
+          "trace_6c9c88c530554de4969b0ae43d294038"
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200
+        ]
+      },
+      "candidate": {
+        "passed": true,
+        "business": {
+          "passed": true,
+          "checks": {
+            "reservation_count": true,
+            "no_duplicate_idempotency_keys": true,
+            "final_session_state": true
+          },
+          "active_reservations": 1,
+          "reservation_rows": 1
+        },
+        "trajectory": {
+          "passed": true,
+          "checks": {
+            "ordered_tools": true,
+            "forbidden_tools_absent": true,
+            "timeout_reconciliation": true
+          },
+          "tool_names": [
+            "search_available_slots",
+            "prepare_reservation",
+            "confirm_reservation",
+            "confirm_reservation"
+          ]
+        },
+        "semantic": {
+          "passed": true,
+          "checks": {
+            "keyword": true,
+            "required_citation": true
+          }
+        },
+        "final_state": "SUCCEEDED",
+        "answers": [
+          "预约预览已生成，核对时段后请明确确认。",
+          "预约确认成功，已核对数据库状态。",
+          "预约确认成功，已核对数据库状态。"
+        ],
+        "trace_ids": [
+          "trace_9605de02516345eca39b448986639f2a",
+          "trace_2d44b37c067d42ad88e606c9fcfe5c9e",
+          "trace_8f8dcd61e3eb4c9f99a9f6ca2b65ea48"
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200
+        ]
+      },
+      "regression_status": "UNCHANGED_PASS"
+    }
+  ],
+  "versions": {
+    "baseline": {
+      "passed": 3,
+      "failed": 3
+    },
+    "candidate": {
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "summary": {
+    "baseline_pass_rate": 0.5,
+    "candidate_pass_rate": 1.0,
+    "fixed": 3,
+    "regressed": 0,
+    "candidate_business_pass_rate": 1.0,
+    "candidate_trajectory_pass_rate": 1.0,
+    "candidate_semantic_pass_rate": 1.0,
+    "candidate_duplicate_writes": 0
+  }
+}

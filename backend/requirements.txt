@@ -32,3 +32,6 @@ aiosqlite==0.22.1                 # 异步 checkpointer 连接驱动
 # ===== RAG =====
 chromadb==1.5.9
 sentence-transformers==6.0.1
+jieba==0.42.1
+rank-bm25==0.2.2
+numpy>=2.0

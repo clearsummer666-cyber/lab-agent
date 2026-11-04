@@ -23,6 +23,7 @@ class Reservation(Base):
             "end_time",
             name="uk_reservation_exact",
         ),
+        UniqueConstraint("idempotency_key", name="uk_reservation_idempotency"),
         {"comment": "预约信息"},
     )
 
@@ -43,6 +44,9 @@ class Reservation(Base):
         String(20), comment="结束时间", nullable=False
     )
     remark: Mapped[str] = mapped_column(String(255), comment="备注", nullable=True)
+    idempotency_key: Mapped[str | None] = mapped_column(
+        String(64), nullable=True, comment="预约确认幂等键"
+    )
     status: Mapped[int] = mapped_column(
         comment="预约状态 0待审核，1已通过，2已拒绝，3已取消", default=0
     )

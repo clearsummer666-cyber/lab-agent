@@ -1,0 +1,609 @@
+{
+  "generated_at": "2026-11-04T09:14:40.988409+00:00",
+  "retrieval": "local deterministic hashed embedding + jieba/BM25 + RRF(k=60)",
+  "case_count": 6,
+  "strategies": {
+    "A": {
+      "metrics": {
+        "hit_rate_at_3": 0.8333333333333334,
+        "mrr": 0.8333333333333334,
+        "top_1_hit_rate": 0.6666666666666666,
+        "expired_rule_recall_rate": 0.3333333333333333,
+        "key_condition_coverage": 0.8888888888888888,
+        "expected_chunk_recall_at_3": 0.8333333333333334,
+        "rule_code_coverage": 0.0
+      },
+      "cases": [
+        {
+          "case_id": "rag_001_version_conflict",
+          "citations": [
+            "chem_rules_2026_01_art_03",
+            "chem_rules_2025_expired_art_03",
+            "chem_rules_2026_01_art_01"
+          ],
+          "rule_codes": [],
+          "answer": "依据检索结果：化学实验室预约管理办法（2026现行版）\n第一章 分角色预约权限与周末审批\n研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。 化学实验室预约管理办法（2025旧版-已废止）\n第一章 预约资格与时段限制（2025旧版）\n研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。 化学实验室预约管理办法（2026现行版）\n第一章 分角色预约权限与周末审批\n本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 1.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 0.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_002_role_isolation",
+          "citations": [
+            "chem_rules_2026_01_art_01",
+            "chem_rules_2025_expired_art_03",
+            "chem_rules_2026_01_art_03"
+          ],
+          "rule_codes": [],
+          "answer": "依据检索结果：化学实验室预约管理办法（2026现行版）\n第一章 分角色预约权限与周末审批\n本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。 化学实验室预约管理办法（2025旧版-已废止）\n第一章 预约资格与时段限制（2025旧版）\n研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。 化学实验室预约管理办法（2026现行版）\n第一章 分角色预约权限与周末审批\n研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 0.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_003_general_and_special_merge",
+          "citations": [
+            "chem_rules_2026_01_art_04",
+            "general_rules_2026_01_art_01",
+            "chem_rules_2025_expired_art_03"
+          ],
+          "rule_codes": [],
+          "answer": "依据检索结果：化学实验室预约管理办法（2026现行版）\n第二章 危化品通风橱专项规定\n预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以 校级实验室通用安全与预约管理办法（2026版）\n第一章 通用预约与开放规则\n凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 化学实验室预约管理办法（2025旧版-已废止）\n第一章 预约资格与时段限制（2025旧版）\n研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 0.6666666666666666,
+          "expired_recall": 1.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 0.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_004_multihop_pcr",
+          "citations": [
+            "bio_pcr_rules_2026_01_art_02",
+            "bio_pcr_rules_2026_01_art_01",
+            "chem_rules_2026_01_art_04"
+          ],
+          "rule_codes": [],
+          "answer": "依据检索结果：生物实验室及定量PCR仪专项使用规范（2026版）\n第一章 PCR设备准入与培训前置约束\n培训资质采取严格前置校验原则：未获得PCR专项实操认证的用户，系统严禁先占位预约再补办培训；违规代约者双方均记违约2次。 生物实验室及定量PCR仪专项使用规范（2026版）\n第一章 PCR设备准入与培训前置约束\n预约生物实验室定量PCR仪（PCR）的用户，必须同时具备校级实验室安全培训合格记录与《分子生物学PCR设备专项实操认证》。 化学实验室预约管理办法（2026现行版）\n第二章 危化品通风橱专项规定\n预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 0.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 0.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_005_cancellation_and_ban",
+          "citations": [
+            "general_rules_2026_01_art_03",
+            "general_rules_2026_01_art_01",
+            "general_rules_2026_01_art_02"
+          ],
+          "rule_codes": [],
+          "answer": "依据检索结果：校级实验室通用安全与预约管理办法（2026版）\n第二章 取消预约与违约惩戒\n预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。 校级实验室通用安全与预约管理办法（2026版）\n第一章 通用预约与开放规则\n凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 校级实验室通用安全与预约管理办法（2026版）\n第一章 通用预约与开放规则\n若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限（不超过4小时）仍受本通用规则约束。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 0.5,
+          "expired_recall": 0.0,
+          "condition_coverage": 0.3333333333333333,
+          "rule_code_coverage": 0.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_006_unanswerable_guardrail",
+          "citations": [
+            "chem_rules_2025_expired_art_03",
+            "chem_rules_2026_01_art_02",
+            "chem_rules_2026_01_art_01"
+          ],
+          "rule_codes": [],
+          "answer": "现有有效规则未提及该收费或报销事项，证据不足，无法确认；请咨询实验室管理员。",
+          "parent_context_count": 0,
+          "hit_at_3": 0.0,
+          "mrr": 0.0,
+          "top_1_hit": 0.0,
+          "expected_recall_at_3": null,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": null,
+          "abstention_correct": true
+        }
+      ]
+    },
+    "B": {
+      "metrics": {
+        "hit_rate_at_3": 0.8333333333333334,
+        "mrr": 0.6666666666666666,
+        "top_1_hit_rate": 0.5,
+        "expired_rule_recall_rate": 0.3333333333333333,
+        "key_condition_coverage": 0.8888888888888888,
+        "expected_chunk_recall_at_3": 0.8333333333333334,
+        "rule_code_coverage": 0.9
+      },
+      "cases": [
+        {
+          "case_id": "rag_001_version_conflict",
+          "citations": [
+            "chem_rules_2025_expired_art_03",
+            "chem_rules_2026_01_art_03",
+            "chem_rules_2026_01_art_01"
+          ],
+          "rule_codes": [
+            "EXPIRED_WEEKEND_FORBIDDEN",
+            "SAFETY_TRAINING_REQUIRED",
+            "WEEKEND_ADMIN_APPROVAL_REQUIRED",
+            "ADVISOR_APPROVAL_REQUIRED",
+            "UNDERGRAD_NO_WEEKEND"
+          ],
+          "answer": "依据检索结果：研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。 研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。 本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 0.5,
+          "top_1_hit": 0.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 1.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_002_role_isolation",
+          "citations": [
+            "chem_rules_2025_expired_art_03",
+            "chem_rules_2026_01_art_01",
+            "chem_rules_2026_01_art_03"
+          ],
+          "rule_codes": [
+            "EXPIRED_WEEKEND_FORBIDDEN",
+            "SAFETY_TRAINING_REQUIRED",
+            "ADVISOR_APPROVAL_REQUIRED",
+            "UNDERGRAD_NO_WEEKEND",
+            "WEEKEND_ADMIN_APPROVAL_REQUIRED"
+          ],
+          "answer": "依据检索结果：研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。 本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。 研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 0.5,
+          "top_1_hit": 0.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_003_general_and_special_merge",
+          "citations": [
+            "chem_rules_2026_01_art_04",
+            "general_rules_2026_01_art_01",
+            "chem_rules_2025_expired_art_03"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "HAZCHEM_CERT_REQUIRED",
+            "ADVANCE_3_DAYS_HAZCHEM",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "EXPIRED_WEEKEND_FORBIDDEN"
+          ],
+          "answer": "依据检索结果：预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以便安全员核验试剂清单。 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 0.6666666666666666,
+          "expired_recall": 1.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_004_multihop_pcr",
+          "citations": [
+            "bio_pcr_rules_2026_01_art_01",
+            "bio_pcr_rules_2026_01_art_02",
+            "general_rules_2026_01_art_02"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "PCR_TRAINING_REQUIRED",
+            "NO_RESERVE_BEFORE_TRAINING",
+            "SPECIAL_RULE_PRIORITY",
+            "MAX_DURATION_4_HOURS"
+          ],
+          "answer": "依据检索结果：预约生物实验室定量PCR仪（PCR）的用户，必须同时具备校级实验室安全培训合格记录与《分子生物学PCR设备专项实操认证》。 培训资质采取严格前置校验原则：未获得PCR专项实操认证的用户，系统严禁先占位预约再补办培训；违规代约者双方均记违约2次。 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限（不超过4小时）仍受本通用规则约束。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_005_cancellation_and_ban",
+          "citations": [
+            "general_rules_2026_01_art_03",
+            "general_rules_2026_01_art_01",
+            "general_rules_2026_01_art_02"
+          ],
+          "rule_codes": [
+            "CANCEL_BEFORE_2_HOURS",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "SPECIAL_RULE_PRIORITY"
+          ],
+          "answer": "依据检索结果：预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限（不超过4小时）仍受本通用规则约束。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 0.5,
+          "expired_recall": 0.0,
+          "condition_coverage": 0.3333333333333333,
+          "rule_code_coverage": 0.5,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_006_unanswerable_guardrail",
+          "citations": [
+            "chem_rules_2025_expired_art_03",
+            "chem_rules_2026_01_art_03",
+            "chem_rules_2026_01_art_02"
+          ],
+          "rule_codes": [],
+          "answer": "现有有效规则未提及该收费或报销事项，证据不足，无法确认；请咨询实验室管理员。",
+          "parent_context_count": 0,
+          "hit_at_3": 0.0,
+          "mrr": 0.0,
+          "top_1_hit": 0.0,
+          "expected_recall_at_3": null,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": null,
+          "abstention_correct": true
+        }
+      ]
+    },
+    "C": {
+      "metrics": {
+        "hit_rate_at_3": 0.8333333333333334,
+        "mrr": 0.8333333333333334,
+        "top_1_hit_rate": 0.8333333333333334,
+        "expired_rule_recall_rate": 0.0,
+        "key_condition_coverage": 1.0,
+        "expected_chunk_recall_at_3": 0.9333333333333333,
+        "rule_code_coverage": 1.0
+      },
+      "cases": [
+        {
+          "case_id": "rag_001_version_conflict",
+          "citations": [
+            "chem_rules_2026_01_art_03",
+            "general_rules_2026_01_art_01",
+            "chem_rules_2026_01_art_04"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "WEEKEND_ADMIN_APPROVAL_REQUIRED",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "HAZCHEM_CERT_REQUIRED",
+            "ADVANCE_3_DAYS_HAZCHEM"
+          ],
+          "answer": "依据检索结果：研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以便安全员核验试剂清单。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_002_role_isolation",
+          "citations": [
+            "chem_rules_2026_01_art_01",
+            "general_rules_2026_01_art_01",
+            "general_rules_2026_01_art_03"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "ADVISOR_APPROVAL_REQUIRED",
+            "UNDERGRAD_NO_WEEKEND",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "CANCEL_BEFORE_2_HOURS"
+          ],
+          "answer": "依据检索结果：本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_003_general_and_special_merge",
+          "citations": [
+            "chem_rules_2026_01_art_04",
+            "general_rules_2026_01_art_01",
+            "chem_rules_2026_01_art_03"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "HAZCHEM_CERT_REQUIRED",
+            "ADVANCE_3_DAYS_HAZCHEM",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "WEEKEND_ADMIN_APPROVAL_REQUIRED"
+          ],
+          "answer": "依据检索结果：预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以便安全员核验试剂清单。 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 0.6666666666666666,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_004_multihop_pcr",
+          "citations": [
+            "bio_pcr_rules_2026_01_art_01",
+            "bio_pcr_rules_2026_01_art_02",
+            "general_rules_2026_01_art_02"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "PCR_TRAINING_REQUIRED",
+            "NO_RESERVE_BEFORE_TRAINING",
+            "SPECIAL_RULE_PRIORITY",
+            "MAX_DURATION_4_HOURS"
+          ],
+          "answer": "依据检索结果：预约生物实验室定量PCR仪（PCR）的用户，必须同时具备校级实验室安全培训合格记录与《分子生物学PCR设备专项实操认证》。 培训资质采取严格前置校验原则：未获得PCR专项实操认证的用户，系统严禁先占位预约再补办培训；违规代约者双方均记违约2次。 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限（不超过4小时）仍受本通用规则约束。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_005_cancellation_and_ban",
+          "citations": [
+            "general_rules_2026_01_art_03",
+            "general_rules_2026_01_art_01",
+            "general_rules_2026_01_art_04"
+          ],
+          "rule_codes": [
+            "CANCEL_BEFORE_2_HOURS",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "VIOLATION_LIMIT_3_BAN_30_DAYS"
+          ],
+          "answer": "依据检索结果：预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。 自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。",
+          "parent_context_count": 0,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_006_unanswerable_guardrail",
+          "citations": [
+            "chem_rules_2026_01_art_03",
+            "general_rules_2026_01_art_03",
+            "general_rules_2026_01_art_01"
+          ],
+          "rule_codes": [],
+          "answer": "现有有效规则未提及该收费或报销事项，证据不足，无法确认；请咨询实验室管理员。",
+          "parent_context_count": 0,
+          "hit_at_3": 0.0,
+          "mrr": 0.0,
+          "top_1_hit": 0.0,
+          "expected_recall_at_3": null,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": null,
+          "abstention_correct": true
+        }
+      ]
+    },
+    "D": {
+      "metrics": {
+        "hit_rate_at_3": 0.8333333333333334,
+        "mrr": 0.8333333333333334,
+        "top_1_hit_rate": 0.8333333333333334,
+        "expired_rule_recall_rate": 0.0,
+        "key_condition_coverage": 1.0,
+        "expected_chunk_recall_at_3": 0.9333333333333333,
+        "rule_code_coverage": 1.0
+      },
+      "cases": [
+        {
+          "case_id": "rag_001_version_conflict",
+          "citations": [
+            "chem_rules_2026_01_art_03",
+            "chem_rules_2026_01_art_04",
+            "general_rules_2026_01_art_01"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "WEEKEND_ADMIN_APPROVAL_REQUIRED",
+            "HAZCHEM_CERT_REQUIRED",
+            "ADVANCE_3_DAYS_HAZCHEM",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS"
+          ],
+          "answer": "依据现行规则：第一章 分角色预约权限与周末审批。第一条 本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。第二条 教职工（教师及实验员）凭工号可直接预约化学实验室的工作日及周末全部开放时段，免除单次行政审批。第三条 研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。\n第二章 危化品通风橱专项规定。第四条 预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以便安全员核验试剂清单。\n第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。",
+          "parent_context_count": 3,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_002_role_isolation",
+          "citations": [
+            "chem_rules_2026_01_art_01",
+            "general_rules_2026_01_art_01",
+            "general_rules_2026_01_art_03"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "ADVISOR_APPROVAL_REQUIRED",
+            "UNDERGRAD_NO_WEEKEND",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "CANCEL_BEFORE_2_HOURS"
+          ],
+          "answer": "依据现行规则：第一章 分角色预约权限与周末审批。第一条 本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。第二条 教职工（教师及实验员）凭工号可直接预约化学实验室的工作日及周末全部开放时段，免除单次行政审批。第三条 研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。\n第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。\n第二章 取消预约与违约惩戒。第三条 预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。第四条 自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。",
+          "parent_context_count": 3,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_003_general_and_special_merge",
+          "citations": [
+            "chem_rules_2026_01_art_04",
+            "chem_rules_2026_01_art_03",
+            "general_rules_2026_01_art_01"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "HAZCHEM_CERT_REQUIRED",
+            "ADVANCE_3_DAYS_HAZCHEM",
+            "WEEKEND_ADMIN_APPROVAL_REQUIRED",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS"
+          ],
+          "answer": "依据现行规则：第二章 危化品通风橱专项规定。第四条 预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以便安全员核验试剂清单。\n第一章 分角色预约权限与周末审批。第一条 本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。第二条 教职工（教师及实验员）凭工号可直接预约化学实验室的工作日及周末全部开放时段，免除单次行政审批。第三条 研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。\n第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。",
+          "parent_context_count": 3,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 0.6666666666666666,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_004_multihop_pcr",
+          "citations": [
+            "bio_pcr_rules_2026_01_art_01",
+            "bio_pcr_rules_2026_01_art_02",
+            "general_rules_2026_01_art_02"
+          ],
+          "rule_codes": [
+            "SAFETY_TRAINING_REQUIRED",
+            "PCR_TRAINING_REQUIRED",
+            "NO_RESERVE_BEFORE_TRAINING",
+            "SPECIAL_RULE_PRIORITY",
+            "MAX_DURATION_4_HOURS"
+          ],
+          "answer": "依据现行规则：第一章 PCR设备准入与培训前置约束。第一条 预约生物实验室定量PCR仪（PCR）的用户，必须同时具备校级实验室安全培训合格记录与《分子生物学PCR设备专项实操认证》。第二条 培训资质采取严格前置校验原则：未获得PCR专项实操认证的用户，系统严禁先占位预约再补办培训；违规代约者双方均记违约2次。\n第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。",
+          "parent_context_count": 2,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_005_cancellation_and_ban",
+          "citations": [
+            "general_rules_2026_01_art_03",
+            "general_rules_2026_01_art_01",
+            "general_rules_2026_01_art_04"
+          ],
+          "rule_codes": [
+            "CANCEL_BEFORE_2_HOURS",
+            "ADVANCE_1_DAY_GENERAL",
+            "MAX_DURATION_4_HOURS",
+            "VIOLATION_LIMIT_3_BAN_30_DAYS"
+          ],
+          "answer": "依据现行规则：第二章 取消预约与违约惩戒。第三条 预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。第四条 自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。\n第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。",
+          "parent_context_count": 2,
+          "hit_at_3": 1.0,
+          "mrr": 1.0,
+          "top_1_hit": 1.0,
+          "expected_recall_at_3": 1.0,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": 1.0,
+          "abstention_correct": false
+        },
+        {
+          "case_id": "rag_006_unanswerable_guardrail",
+          "citations": [
+            "chem_rules_2026_01_art_03",
+            "chem_rules_2026_01_art_04",
+            "general_rules_2026_01_art_03"
+          ],
+          "rule_codes": [],
+          "answer": "现有有效规则未提及该收费或报销事项，证据不足，无法确认；请咨询实验室管理员。",
+          "parent_context_count": 0,
+          "hit_at_3": 0.0,
+          "mrr": 0.0,
+          "top_1_hit": 0.0,
+          "expected_recall_at_3": null,
+          "expired_recall": 0.0,
+          "condition_coverage": 1.0,
+          "rule_code_coverage": null,
+          "abstention_correct": true
+        }
+      ]
+    }
+  }
+}

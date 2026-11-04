@@ -34,10 +34,14 @@
 这是必要的一次性代价，不是 bug。
 """
 
+import os
 import sqlite3
 import time
+from pathlib import Path
 
-from app.ai.retention import _DB_PATH
+from app.ai.retention import _DB_PATH as _DEFAULT_DB_PATH
+
+_DB_PATH = Path(os.environ.get("EVAL_THREAD_DB_PATH", _DEFAULT_DB_PATH))
 
 # 30 分钟没说话就算新会话。选这个值的理由：
 #   比一次预约流程（通常 2-5 分钟）长得多，不会中途断开；
@@ -120,7 +124,29 @@ def reset_session(user_id: int) -> str:
         conn.commit()
     finally:
         conn.close()
-    return f"user:{user_id}:s{session_no}"
+    thread_id = f"user:{user_id}:s{session_no}"
+    _ensure_controlled_session(user_id, thread_id, reset=True)
+    return thread_id
+
+
+def _ensure_controlled_session(user_id: int, thread_id: str, reset: bool = False) -> None:
+    """保持 LangGraph thread 与受控状态机 thread 一致，新建时为 IDLE。"""
+    try:
+        from app.database import SessionLocal
+        from app.models.agent_session import AgentSession
+        with SessionLocal() as db:
+            session = db.query(AgentSession).filter(AgentSession.thread_id == thread_id).first()
+            if session is None:
+                db.add(AgentSession(thread_id=thread_id, user_id=user_id,
+                                    state="IDLE", requirements_json={}))
+            elif reset:
+                session.state = "IDLE"
+                session.requirements_json = {}
+                session.preview_id = None
+            db.commit()
+    except Exception:
+        # 原有仅使用 LangGraph 的启动路径仍保持原行为；建表后该分支自动生效。
+        pass
 
 
 def current_session(user_id: int) -> tuple[int, float] | None:

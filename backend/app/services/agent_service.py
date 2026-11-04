@@ -61,6 +61,21 @@ TOOL_LABELS = {
 RECURSION_LIMIT = 25
 
 
+def run_controlled(db: Session, current_user: User, payload, mode: str = "candidate"):
+    from app.services.controlled_agent import ControlledAgent
+    return ControlledAgent(db, current_user, payload).run()
+
+
+def get_trace(db: Session, trace_id: str):
+    from app.models.agent_run import AgentRun
+    return db.query(AgentRun).filter(AgentRun.trace_id == trace_id).first()
+
+
+def get_controlled_reservation(db: Session, reservation_id: int):
+    from app.models.reservation import Reservation
+    return db.get(Reservation, reservation_id)
+
+
 def _last_user_text(data: ChatRequest) -> str:
     """只取最后一条 user 消息（L2-PLAN 决策 D3）。
 

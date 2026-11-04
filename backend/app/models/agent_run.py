@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Index, String
+from sqlalchemy import ForeignKey, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -20,6 +20,7 @@ class AgentRun(Base):
         # 统计接口一定带时间范围过滤，所以 create_time 必须有索引
         Index("idx_agent_runs_create_time", "create_time"),
         Index("idx_agent_runs_user_id", "user_id"),
+        Index("idx_agent_runs_trace_id", "trace_id"),
         {"comment": "Agent 调用日志"},
     )
 
@@ -58,4 +59,13 @@ class AgentRun(Base):
     )
     error: Mapped[str] = mapped_column(
         String(255), comment="失败原因", nullable=True
+    )
+    trace_id: Mapped[str | None] = mapped_column(
+        String(64), nullable=True, comment="受控链路追踪ID"
+    )
+    session_status: Mapped[str | None] = mapped_column(
+        String(50), nullable=True, comment="本轮结束状态机状态"
+    )
+    trace_detail: Mapped[str | None] = mapped_column(
+        Text, nullable=True, comment="JSON轨迹详情"
     )

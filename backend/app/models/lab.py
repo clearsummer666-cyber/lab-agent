@@ -22,3 +22,7 @@ class Lab(Base):
     description: Mapped[str | None] = mapped_column(String(500), comment="简介")
     img: Mapped[str | None] = mapped_column(String(200), comment="封面图")
     status: Mapped[int] = mapped_column(default=1, comment="状态：0-关闭，1-开放")
+    lab_type: Mapped[str] = mapped_column(
+        String(50), default="general", nullable=False,
+        comment="实验室类型：chemistry/bio/general",
+    )

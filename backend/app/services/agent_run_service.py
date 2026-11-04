@@ -5,6 +5,7 @@
 两层保险 —— 日志是观察者，观察者挂掉不该让被观察者一起死。
 """
 
+import json
 import logging
 from collections import Counter
 from datetime import datetime, timedelta
@@ -32,6 +33,9 @@ def record_run(
     error: str | None = None,
     model_ms: int = 0,
     tool_ms: int = 0,
+    trace_id: str | None = None,
+    session_status: str | None = None,
+    trace_detail: dict | None = None,
 ) -> None:
     """写一条调用记录。**永不抛异常**，失败只记 warning。"""
     try:
@@ -48,6 +52,10 @@ def record_run(
             input_tokens=input_tokens or 0,
             output_tokens=output_tokens or 0,
             error=(error or "")[:255] or None,
+            trace_id=trace_id,
+            session_status=session_status,
+            trace_detail=(json.dumps(trace_detail, ensure_ascii=False, default=str)
+                          if trace_detail is not None else None),
         )
         db.add(run)
         db.commit()

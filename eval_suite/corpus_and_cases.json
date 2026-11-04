@@ -1,0 +1,651 @@
+{
+  "rule_corpus": [
+    {
+      "document_id": "general_rules_2026_01",
+      "doc_title": "校级实验室通用安全与预约管理办法（2026版）",
+      "lab_type": "general",
+      "priority": 1,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "chapters": [
+        {
+          "parent_id": "general_rules_2026_01_chap_01",
+          "chapter_title": "第一章 通用预约与开放规则",
+          "parent_content": "第一章 通用预约与开放规则。第一条 凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。第二条 若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限仍受通用规则约束。",
+          "articles": [
+            {
+              "chunk_id": "general_rules_2026_01_art_01",
+              "title_path": [
+                "校级实验室通用安全与预约管理办法（2026版）",
+                "第一章 通用预约与开放规则",
+                "第一条"
+              ],
+              "content": "凡进入本校各类实验室开展实验的师生，均须通过校级预约系统实名预约。所有常规实验室及基础设备须至少提前1天（24小时）提交预约申请，单次预约时长不得超过4小时。",
+              "applicable_roles": [
+                "undergraduate",
+                "graduate_student",
+                "faculty"
+              ],
+              "equipment_tags": [],
+              "action": "reserve",
+              "rule_codes": [
+                "ADVANCE_1_DAY_GENERAL",
+                "MAX_DURATION_4_HOURS"
+              ]
+            },
+            {
+              "chunk_id": "general_rules_2026_01_art_02",
+              "title_path": [
+                "校级实验室通用安全与预约管理办法（2026版）",
+                "第一章 通用预约与开放规则",
+                "第二条"
+              ],
+              "content": "若专项实验室或特种设备对提前预约时间有更严格规定的，优先适用专项规定，但单次时长上限（不超过4小时）仍受本通用规则约束。",
+              "applicable_roles": [
+                "undergraduate",
+                "graduate_student",
+                "faculty"
+              ],
+              "equipment_tags": [],
+              "action": "reserve",
+              "rule_codes": [
+                "SPECIAL_RULE_PRIORITY",
+                "MAX_DURATION_4_HOURS"
+              ]
+            }
+          ]
+        },
+        {
+          "parent_id": "general_rules_2026_01_chap_02",
+          "chapter_title": "第二章 取消预约与违约惩戒",
+          "parent_content": "第二章 取消预约与违约惩戒。第三条 预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。第四条 自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。",
+          "articles": [
+            {
+              "chunk_id": "general_rules_2026_01_art_03",
+              "title_path": [
+                "校级实验室通用安全与预约管理办法（2026版）",
+                "第二章 取消预约与违约惩戒",
+                "第三条"
+              ],
+              "content": "预约人因故无法按时使用实验室的，须至少在预约时段开始前2小时通过系统取消预约；未提前2小时取消且未到场签到者，记违约（爽约）1次。",
+              "applicable_roles": [
+                "undergraduate",
+                "graduate_student",
+                "faculty"
+              ],
+              "equipment_tags": [],
+              "action": "cancel",
+              "rule_codes": [
+                "CANCEL_BEFORE_2_HOURS"
+              ]
+            },
+            {
+              "chunk_id": "general_rules_2026_01_art_04",
+              "title_path": [
+                "校级实验室通用安全与预约管理办法（2026版）",
+                "第二章 取消预约与违约惩戒",
+                "第四条"
+              ],
+              "content": "自然学期内累计违约达3次及以上的用户，系统将自动冻结其全部实验室预约权限30天，解封须提交导师签字的书面说明。",
+              "applicable_roles": [
+                "undergraduate",
+                "graduate_student",
+                "faculty"
+              ],
+              "equipment_tags": [],
+              "action": "reserve",
+              "rule_codes": [
+                "VIOLATION_LIMIT_3_BAN_30_DAYS"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "chem_rules_2025_expired",
+      "doc_title": "化学实验室预约管理办法（2025旧版-已废止）",
+      "lab_type": "chemistry",
+      "priority": 2,
+      "valid_from": "2025-01-01",
+      "valid_to": "2025-12-31",
+      "chapters": [
+        {
+          "parent_id": "chem_rules_2025_expired_chap_01",
+          "chapter_title": "第一章 预约资格与时段限制（2025旧版）",
+          "parent_content": "第一章 预约资格与时段限制（2025旧版）。第三条 研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。",
+          "articles": [
+            {
+              "chunk_id": "chem_rules_2025_expired_art_03",
+              "title_path": [
+                "化学实验室预约管理办法（2025旧版-已废止）",
+                "第一章 预约资格与时段限制",
+                "第三条"
+              ],
+              "content": "研究生完成基础安全培训后仅可预约化学实验室工作日时段；周末及法定节假日严禁任何学生（含本科生、研究生）预约化学实验室，不接受任何特殊审批。",
+              "applicable_roles": [
+                "undergraduate",
+                "graduate_student"
+              ],
+              "equipment_tags": [],
+              "action": "reserve",
+              "rule_codes": [
+                "EXPIRED_WEEKEND_FORBIDDEN"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "chem_rules_2026_01",
+      "doc_title": "化学实验室预约管理办法（2026现行版）",
+      "lab_type": "chemistry",
+      "priority": 2,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "chapters": [
+        {
+          "parent_id": "chem_rules_2026_01_chap_01",
+          "chapter_title": "第一章 分角色预约权限与周末审批",
+          "parent_content": "第一章 分角色预约权限与周末审批。第一条 本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。第二条 教职工（教师及实验员）凭工号可直接预约化学实验室的工作日及周末全部开放时段，免除单次行政审批。第三条 研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。",
+          "articles": [
+            {
+              "chunk_id": "chem_rules_2026_01_art_01",
+              "title_path": [
+                "化学实验室预约管理办法（2026现行版）",
+                "第一章 分角色预约权限与周末审批",
+                "第一条"
+              ],
+              "content": "本科生仅允许在工作日白天时段（08:00-17:30）预约基础化学实验室，须先通过实验室安全培训并获得指导教师线上授权；严禁本科生预约周末时段。",
+              "applicable_roles": [
+                "undergraduate"
+              ],
+              "equipment_tags": [],
+              "action": "reserve",
+              "rule_codes": [
+                "SAFETY_TRAINING_REQUIRED",
+                "ADVISOR_APPROVAL_REQUIRED",
+                "UNDERGRAD_NO_WEEKEND"
+              ]
+            },
+            {
+              "chunk_id": "chem_rules_2026_01_art_02",
+              "title_path": [
+                "化学实验室预约管理办法（2026现行版）",
+                "第一章 分角色预约权限与周末审批",
+                "第二条"
+              ],
+              "content": "教职工（教师及实验员）凭工号可直接预约化学实验室的工作日及周末全部开放时段，免除单次行政审批。",
+              "applicable_roles": [
+                "faculty"
+              ],
+              "equipment_tags": [],
+              "action": "reserve",
+              "rule_codes": [
+                "FACULTY_DIRECT_ACCESS"
+              ]
+            },
+            {
+              "chunk_id": "chem_rules_2026_01_art_03",
+              "title_path": [
+                "化学实验室预约管理办法（2026现行版）",
+                "第一章 分角色预约权限与周末审批",
+                "第三条"
+              ],
+              "content": "研究生完成实验室安全培训并通过考核后，可自主预约工作日开放时段；研究生如需预约周末或法定节假日时段，须额外经实验室管理员线上审批通过后方可生效。",
+              "applicable_roles": [
+                "graduate_student"
+              ],
+              "equipment_tags": [],
+              "action": "reserve",
+              "rule_codes": [
+                "SAFETY_TRAINING_REQUIRED",
+                "WEEKEND_ADMIN_APPROVAL_REQUIRED"
+              ]
+            }
+          ]
+        },
+        {
+          "parent_id": "chem_rules_2026_01_chap_02",
+          "chapter_title": "第二章 危化品通风橱专项规定",
+          "parent_content": "第二章 危化品通风橱专项规定。第四条 预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以便安全员核验试剂清单。",
+          "articles": [
+            {
+              "chunk_id": "chem_rules_2026_01_art_04",
+              "title_path": [
+                "化学实验室预约管理办法（2026现行版）",
+                "第二章 危化品通风橱专项规定",
+                "第四条"
+              ],
+              "content": "预约涉及危险化学品操作的特种通风橱（FUME_HOOD）工位，除满足通用安全培训外，预约人还必须持有《危化品实操合格证》，且必须至少提前3天（72小时）提交预约申请，以便安全员核验试剂清单。",
+              "applicable_roles": [
+                "graduate_student",
+                "faculty"
+              ],
+              "equipment_tags": [
+                "FUME_HOOD"
+              ],
+              "action": "reserve",
+              "rule_codes": [
+                "SAFETY_TRAINING_REQUIRED",
+                "HAZCHEM_CERT_REQUIRED",
+                "ADVANCE_3_DAYS_HAZCHEM"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "bio_pcr_rules_2026_01",
+      "doc_title": "生物实验室及定量PCR仪专项使用规范（2026版）",
+      "lab_type": "biology",
+      "priority": 3,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "chapters": [
+        {
+          "parent_id": "bio_pcr_rules_2026_01_chap_01",
+          "chapter_title": "第一章 PCR设备准入与培训前置约束",
+          "parent_content": "第一章 PCR设备准入与培训前置约束。第一条 预约生物实验室定量PCR仪（PCR）的用户，必须同时具备校级实验室安全培训合格记录与《分子生物学PCR设备专项实操认证》。第二条 培训资质采取严格前置校验原则：未获得PCR专项实操认证的用户，系统严禁先占位预约再补办培训；违规代约者双方均记违约2次。",
+          "articles": [
+            {
+              "chunk_id": "bio_pcr_rules_2026_01_art_01",
+              "title_path": [
+                "生物实验室及定量PCR仪专项使用规范（2026版）",
+                "第一章 PCR设备准入与培训前置约束",
+                "第一条"
+              ],
+              "content": "预约生物实验室定量PCR仪（PCR）的用户，必须同时具备校级实验室安全培训合格记录与《分子生物学PCR设备专项实操认证》。",
+              "applicable_roles": [
+                "undergraduate",
+                "graduate_student",
+                "faculty"
+              ],
+              "equipment_tags": [
+                "PCR"
+              ],
+              "action": "reserve",
+              "rule_codes": [
+                "SAFETY_TRAINING_REQUIRED",
+                "PCR_TRAINING_REQUIRED"
+              ]
+            },
+            {
+              "chunk_id": "bio_pcr_rules_2026_01_art_02",
+              "title_path": [
+                "生物实验室及定量PCR仪专项使用规范（2026版）",
+                "第一章 PCR设备准入与培训前置约束",
+                "第二条"
+              ],
+              "content": "培训资质采取严格前置校验原则：未获得PCR专项实操认证的用户，系统严禁先占位预约再补办培训；违规代约者双方均记违约2次。",
+              "applicable_roles": [
+                "undergraduate",
+                "graduate_student",
+                "faculty"
+              ],
+              "equipment_tags": [
+                "PCR"
+              ],
+              "action": "reserve",
+              "rule_codes": [
+                "NO_RESERVE_BEFORE_TRAINING",
+                "PCR_TRAINING_REQUIRED"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "rag_test_cases": [
+    {
+      "case_id": "rag_001_version_conflict",
+      "question": "我是研究生，已经通过了实验室安全培训，请问周末可以预约化学实验室吗？",
+      "user_role": "graduate_student",
+      "lab_type": "chemistry",
+      "effective_date": "2026-11-05",
+      "expected_chunk_ids": [
+        "chem_rules_2026_01_art_03"
+      ],
+      "forbidden_chunk_ids": [
+        "chem_rules_2025_expired_art_03",
+        "chem_rules_2026_01_art_01"
+      ],
+      "required_answer_keywords": [
+        "管理员",
+        "审批",
+        "安全培训"
+      ],
+      "expected_rule_codes": [
+        "SAFETY_TRAINING_REQUIRED",
+        "WEEKEND_ADMIN_APPROVAL_REQUIRED"
+      ]
+    },
+    {
+      "case_id": "rag_002_role_isolation",
+      "question": "本科生做完安全培训后，周末能申请预约化学实验室吗？",
+      "user_role": "undergraduate",
+      "lab_type": "chemistry",
+      "effective_date": "2026-11-05",
+      "expected_chunk_ids": [
+        "chem_rules_2026_01_art_01"
+      ],
+      "forbidden_chunk_ids": [
+        "chem_rules_2026_01_art_02",
+        "chem_rules_2026_01_art_03"
+      ],
+      "required_answer_keywords": [
+        "严禁",
+        "工作日",
+        "指导教师"
+      ],
+      "expected_rule_codes": [
+        "SAFETY_TRAINING_REQUIRED",
+        "ADVISOR_APPROVAL_REQUIRED",
+        "UNDERGRAD_NO_WEEKEND"
+      ]
+    },
+    {
+      "case_id": "rag_003_general_and_special_merge",
+      "question": "研究生预约化学实验室的危化品特种通风橱，需要提前几天申请？单次最多能约几个小时？",
+      "user_role": "graduate_student",
+      "lab_type": "chemistry",
+      "effective_date": "2026-11-05",
+      "expected_chunk_ids": [
+        "chem_rules_2026_01_art_04",
+        "general_rules_2026_01_art_01",
+        "general_rules_2026_01_art_02"
+      ],
+      "forbidden_chunk_ids": [
+        "chem_rules_2025_expired_art_03"
+      ],
+      "required_answer_keywords": [
+        "提前3天",
+        "4小时",
+        "危化品实操合格证"
+      ],
+      "expected_rule_codes": [
+        "ADVANCE_3_DAYS_HAZCHEM",
+        "MAX_DURATION_4_HOURS",
+        "HAZCHEM_CERT_REQUIRED"
+      ]
+    },
+    {
+      "case_id": "rag_004_multihop_pcr",
+      "question": "我还没考下PCR专项实操认证，但下周急用，能不能先在系统里把PCR仪预约占上，明天再去补培训？",
+      "user_role": "graduate_student",
+      "lab_type": "biology",
+      "effective_date": "2026-11-05",
+      "expected_chunk_ids": [
+        "bio_pcr_rules_2026_01_art_01",
+        "bio_pcr_rules_2026_01_art_02"
+      ],
+      "forbidden_chunk_ids": [],
+      "required_answer_keywords": [
+        "严禁",
+        "前置校验",
+        "PCR设备专项实操认证"
+      ],
+      "expected_rule_codes": [
+        "PCR_TRAINING_REQUIRED",
+        "NO_RESERVE_BEFORE_TRAINING"
+      ]
+    },
+    {
+      "case_id": "rag_005_cancellation_and_ban",
+      "question": "如果临时有事去不了实验室，最晚提前多久取消不算爽约？爽约几次会被封号？",
+      "user_role": "graduate_student",
+      "lab_type": "general",
+      "effective_date": "2026-11-05",
+      "expected_chunk_ids": [
+        "general_rules_2026_01_art_03",
+        "general_rules_2026_01_art_04"
+      ],
+      "forbidden_chunk_ids": [],
+      "required_answer_keywords": [
+        "2小时",
+        "3次",
+        "30天"
+      ],
+      "expected_rule_codes": [
+        "CANCEL_BEFORE_2_HOURS",
+        "VIOLATION_LIMIT_3_BAN_30_DAYS"
+      ]
+    },
+    {
+      "case_id": "rag_006_unanswerable_guardrail",
+      "question": "预约化学实验室的核磁共振仪需要缴纳多少耗材测试费？可以使用横向科研经费报销吗？",
+      "user_role": "graduate_student",
+      "lab_type": "chemistry",
+      "effective_date": "2026-11-05",
+      "expected_chunk_ids": [],
+      "forbidden_chunk_ids": [],
+      "required_answer_keywords": [
+        "未提及",
+        "证据不足",
+        "无法确认"
+      ],
+      "expected_rule_codes": [],
+      "expect_evidence_sufficient": false
+    }
+  ],
+  "agent_test_cases": [
+    {
+      "case_id": "agent_001_normal_multi_turn_and_interrupt",
+      "description": "正常多轮预约 + 确认前插入规则问答中断并恢复状态 + 最终确认落库",
+      "user_id": "user_grad_qualified",
+      "fault_inject": null,
+      "turns": [
+        {
+          "user": "帮我预约2026-11-06下午能做PCR的生物实验室"
+        },
+        {
+          "user": "选第一个可用时段，生成预约预览"
+        },
+        {
+          "user": "等一下，我确认前问下：如果我明天临时去不了，最晚提前多久取消不会扣信用？"
+        },
+        {
+          "user": "好的明白了，那确认刚才的预约吧",
+          "action": "CONFIRM_PREVIEW"
+        }
+      ],
+      "expected_business_state": {
+        "final_session_state": "SUCCEEDED",
+        "reservation_count_for_user": 1,
+        "slot_status": "RESERVED",
+        "must_call_tools_in_order": [
+          "search_available_slots",
+          "prepare_reservation",
+          "search_rules",
+          "confirm_reservation"
+        ]
+      }
+    },
+    {
+      "case_id": "agent_002_modify_invalidates_preview",
+      "description": "生成预览后修改预约时间，旧预览必须立即失效（INVALIDATED），不可用旧preview_id落库",
+      "user_id": "user_grad_qualified",
+      "fault_inject": null,
+      "turns": [
+        {
+          "user": "帮我约2026-11-06下午的PCR生物实验室，并直接帮我准备第一个时段的预览"
+        },
+        {
+          "user": "不好意思，时间改一下，改成2026-11-07上午的PCR实验室，重新生成预览"
+        },
+        {
+          "user": "确认最新这个预约",
+          "action": "CONFIRM_PREVIEW"
+        }
+      ],
+      "expected_business_state": {
+        "final_session_state": "SUCCEEDED",
+        "reservation_count_for_user": 1,
+        "reserved_date": "2026-11-07",
+        "invalidated_preview_count": 1
+      }
+    },
+    {
+      "case_id": "agent_003_unqualified_user_blocked",
+      "description": "缺少PCR专项培训的用户尝试预约，后端在prepare阶段拦截并调用RAG给出条款依据，严禁落库",
+      "user_id": "user_grad_no_pcr_cert",
+      "fault_inject": null,
+      "turns": [
+        {
+          "user": "帮我预约2026-11-06下午的PCR生物实验室，选第一个时段"
+        },
+        {
+          "user": "我不管，直接帮我强制确认写入！",
+          "action": "FORCE_CONFIRM_ATTEMPT"
+        }
+      ],
+      "expected_business_state": {
+        "final_session_state": "FAILED",
+        "reservation_count_for_user": 0,
+        "forbidden_tools": [
+          "confirm_reservation"
+        ],
+        "must_cite_chunk": "bio_pcr_rules_2026_01_art_01"
+      }
+    },
+    {
+      "case_id": "agent_004_fault_slot_taken_before_confirm",
+      "description": "故障注入：生成预览后、点击确认前瞬间被他人抢占时段，事务拦截并反馈冲突",
+      "user_id": "user_grad_qualified",
+      "fault_inject": "SLOT_TAKEN_BEFORE_CONFIRM",
+      "turns": [
+        {
+          "user": "预约2026-11-06下午的PCR生物实验室，选第一个生成预览"
+        },
+        {
+          "user": "确认预约",
+          "action": "CONFIRM_PREVIEW"
+        }
+      ],
+      "expected_business_state": {
+        "final_session_state": "FAILED",
+        "reservation_count_for_user": 0,
+        "must_explain_keyword": "占用"
+      }
+    },
+    {
+      "case_id": "agent_005_fault_timeout_after_write_idempotency",
+      "description": "故障注入：写入成功但响应超时（TOOL_TIMEOUT_AFTER_WRITE），Agent必须通过get_reservation核对幂等键并返回成功，严禁产生2条记录",
+      "user_id": "user_grad_qualified",
+      "fault_inject": "TOOL_TIMEOUT_AFTER_WRITE",
+      "turns": [
+        {
+          "user": "预约2026-11-06下午的PCR生物实验室，选第一个生成预览"
+        },
+        {
+          "user": "确认预约",
+          "action": "CONFIRM_PREVIEW"
+        }
+      ],
+      "expected_business_state": {
+        "final_session_state": "SUCCEEDED",
+        "reservation_count_for_user": 1,
+        "must_call_tools_in_order": [
+          "prepare_reservation",
+          "confirm_reservation",
+          "get_reservation"
+        ]
+      }
+    },
+    {
+      "case_id": "agent_006_fault_duplicate_confirm",
+      "description": "故障注入：同一idempotency_key连续重复提交确认2次，数据库唯一约束与幂等逻辑保证只生成1条预约",
+      "user_id": "user_grad_qualified",
+      "fault_inject": "DUPLICATE_CONFIRM",
+      "turns": [
+        {
+          "user": "预约2026-11-06下午的PCR生物实验室，选第一个生成预览"
+        },
+        {
+          "user": "确认预约（模拟连点两次）",
+          "action": "CONFIRM_PREVIEW_TWICE"
+        }
+      ],
+      "expected_business_state": {
+        "final_session_state": "SUCCEEDED",
+        "reservation_count_for_user": 1
+      }
+    }
+  ],
+  "initial_fixtures": {
+    "users": [
+      {
+        "user_id": "user_grad_qualified",
+        "role": "graduate_student",
+        "passed_qualifications": [
+          "SAFETY_TRAINING_REQUIRED",
+          "PCR_TRAINING_REQUIRED"
+        ],
+        "violation_count": 0
+      },
+      {
+        "user_id": "user_grad_no_pcr_cert",
+        "role": "graduate_student",
+        "passed_qualifications": [
+          "SAFETY_TRAINING_REQUIRED"
+        ],
+        "violation_count": 0
+      },
+      {
+        "user_id": "user_undergrad_basic",
+        "role": "undergraduate",
+        "passed_qualifications": [
+          "SAFETY_TRAINING_REQUIRED"
+        ],
+        "violation_count": 0
+      }
+    ],
+    "lab_slots": [
+      {
+        "slot_id": "slot_bio_pcr_20261106_pm",
+        "lab_type": "biology",
+        "lab_name": "生物分子实验室A201",
+        "date": "2026-11-06",
+        "time_range": "14:00-16:00",
+        "is_weekend": false,
+        "equipment": "PCR",
+        "required_rule_codes": [
+          "SAFETY_TRAINING_REQUIRED",
+          "PCR_TRAINING_REQUIRED"
+        ],
+        "status": "AVAILABLE"
+      },
+      {
+        "slot_id": "slot_bio_pcr_20261107_am",
+        "lab_type": "biology",
+        "lab_name": "生物分子实验室A201",
+        "date": "2026-11-07",
+        "time_range": "09:00-11:00",
+        "is_weekend": true,
+        "equipment": "PCR",
+        "required_rule_codes": [
+          "SAFETY_TRAINING_REQUIRED",
+          "PCR_TRAINING_REQUIRED"
+        ],
+        "status": "AVAILABLE"
+      },
+      {
+        "slot_id": "slot_chem_fume_20261109_pm",
+        "lab_type": "chemistry",
+        "lab_name": "有机合成实验室B305",
+        "date": "2026-11-09",
+        "time_range": "14:00-17:00",
+        "is_weekend": false,
+        "equipment": "FUME_HOOD",
+        "required_rule_codes": [
+          "SAFETY_TRAINING_REQUIRED",
+          "HAZCHEM_CERT_REQUIRED"
+        ],
+        "status": "AVAILABLE"
+      }
+    ]
+  }
+}
